@@ -276,6 +276,23 @@ h2 {
     margin-bottom: 0.2rem;
 }
 
+.sidebar-footer {
+    padding-top: 1rem;
+    padding-bottom: 30px;
+    margin-top: auto;
+}
+
+.social-icons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.social-icon {
+    height: 16px;
+    width: auto;
+}
+
 .project {
     margin-bottom: 3.5rem;
     display: flex;
@@ -324,9 +341,115 @@ h2 {
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+
+    /* Disable custom cursor on mobile */
+    .custom-cursor {
+        display: none !important;
+    }
+
+    body,
+    a,
+    button,
+    .project-image-placeholder,
+    .close-detail,
+    .bio-toggle {
+        cursor: auto !important;
+    }
+
+    body {
+        padding: 24px 24px 0 24px;
+        overflow-x: hidden;
+    }
+
     .portfolio-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        height: auto;
+        overflow: visible;
+        max-width: 100%;
+    }
+
+    .logo-header {
+        margin-bottom: 5px;
+    }
+
+    .column {
+        min-height: auto;
+        max-width: 100%;
+    }
+
+    .column+.column {
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .scroll-wrapper {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 15px;
+        scroll-snap-type: x mandatory;
+        scroll-padding: 0 24px;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        margin: 0 -24px;
+        padding: 0 24px;
+        height: auto;
+    }
+
+    .scroll-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .project {
+        min-width: 70vw;
+        max-width: 320px;
+        margin-bottom: 0;
+        scroll-snap-align: start;
+        flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-top: 0.8rem;
+    }
+
+    .details-section {
+        overflow-y: visible;
+        padding-bottom: 0;
+    }
+
+    /* Fix detail view behavior on mobile */
+    .category-column.active-column {
+        transform: none !important;
+    }
+
+    .hidden-column {
+        display: none !important;
+    }
+
+    .project-detail-view {
+        display: none !important;
+        transform: none !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 100;
+        background: var(--bg-color);
+        margin: 0;
+        padding: 24px;
+        border: none;
+    }
+
+    body.detail-active .project-detail-view {
+        display: flex !important;
     }
 }
 
