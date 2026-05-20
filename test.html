@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+  body { height: 100vh; margin: 0; overflow: hidden; padding: 50px; box-sizing: border-box; }
+  .grid { display: grid; height: 100%; border: 2px solid red; grid-template-columns: 1fr; } /* NO grid-template-rows */
+  .col { display: flex; flex-direction: column; min-height: 0; border: 2px solid blue; }
+  .scroll { flex: 1; min-height: 0; overflow-y: auto; background: yellow; }
+  .content { height: 2000px; background: linear-gradient(blue, pink); }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="col">
+      <div class="scroll">
+        <div class="content"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
