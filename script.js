@@ -42,6 +42,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // ---------------------------
 
+    // --- DYNAMIC MOBILE FOOTER SPACING ---
+    function adjustMobileFooterSpacing() {
+        // Run only on mobile
+        if (window.innerWidth > 768) {
+            const footer = document.querySelector('.mobile-footer');
+            if (footer) footer.style.paddingBottom = '';
+            return;
+        }
+
+        // Do not calculate if a project is actively open
+        if (document.body.classList.contains('detail-active')) return;
+
+        const cols = document.querySelectorAll('.category-column');
+        if (cols.length === 0) return;
+        const lastCol = cols[cols.length - 1];
+        const footer = document.querySelector('.mobile-footer');
+        if (!footer) return;
+
+        // Reset to CSS defined padding to measure natural height
+        footer.style.paddingBottom = ''; 
+
+        // Force synchronous layout recalculation
+        const lastColRect = lastCol.getBoundingClientRect();
+        const lastColTop = lastColRect.top + window.pageYOffset;
+        const currentDocHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+        
+        // Calculate the minimum document height required to allow scrolling lastCol to the top
+        const requiredDocHeight = lastColTop + window.innerHeight;
+
+        if (requiredDocHeight > currentDocHeight) {
+            const currentPadding = parseFloat(window.getComputedStyle(footer).paddingBottom) || 0;
+            const extraSpace = requiredDocHeight - currentDocHeight;
+            footer.style.paddingBottom = (currentPadding + extraSpace) + 'px';
+        }
+    }
+
+    // Call initially and on layout changes
+    adjustMobileFooterSpacing();
+    window.addEventListener('load', adjustMobileFooterSpacing);
+    window.addEventListener('resize', adjustMobileFooterSpacing);
+    // ---------------------------
+
     const scrollWrappers = document.querySelectorAll('.scroll-wrapper');
 
     scrollWrappers.forEach(wrapper => {
