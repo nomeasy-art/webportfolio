@@ -42,113 +42,136 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // ---------------------------
 
-    if (window.innerWidth > 1200) {
-        const scrollWrappers = document.querySelectorAll('.scroll-wrapper');
+    const scrollWrappers = document.querySelectorAll('.scroll-wrapper');
 
-        scrollWrappers.forEach(wrapper => {
-            const originalChildren = Array.from(wrapper.children);
+    scrollWrappers.forEach(wrapper => {
+        // Skip infinite scroll for tablet where layout is full height
+        if (window.innerWidth <= 1200 && window.innerWidth > 768) {
+            return;
+        }
 
-            // Se l'altezza dei contenuti originali è minore dello schermo, lo scroll infinito si blocca.
-            // Dobbiamo assicurarci che un "singolo set" riempia sempre abbondantemente lo schermo!
-            const originalHeight = wrapper.scrollHeight;
-            let copiesPerSet = 1;
+        const isHorizontal = window.innerWidth <= 768;
+        const originalChildren = Array.from(wrapper.children);
 
-            // Se il contenuto è poco, calcoliamo quante copie servono per superare l'altezza dello schermo
-            if (originalHeight > 0 && originalHeight < window.innerHeight) {
-                copiesPerSet = Math.ceil(window.innerHeight / originalHeight);
+        const originalSize = isHorizontal ? wrapper.scrollWidth : wrapper.scrollHeight;
+        const viewportSize = isHorizontal ? window.innerWidth : window.innerHeight;
+
+        let copiesPerSet = 1;
+        if (originalSize > 0 && originalSize < viewportSize) {
+            copiesPerSet = Math.ceil(viewportSize / originalSize);
+        }
+
+        wrapper.innerHTML = '';
+        for (let set = 0; set < 3; set++) {
+            for (let c = 0; c < copiesPerSet; c++) {
+                originalChildren.forEach(child => wrapper.appendChild(child.cloneNode(true)));
             }
+        }
 
-            // Puliamo il contenitore e generiamo 3 set massicci
-            wrapper.innerHTML = '';
-            for (let set = 0; set < 3; set++) {
-                for (let c = 0; c < copiesPerSet; c++) {
-                    originalChildren.forEach(child => wrapper.appendChild(child.cloneNode(true)));
-                }
-            }
+        const getSetSize = () => (isHorizontal ? wrapper.scrollWidth : wrapper.scrollHeight) / 3;
 
-            const getSetHeight = () => wrapper.scrollHeight / 3;
+        if (isHorizontal) {
+            wrapper.style.scrollBehavior = 'auto';
+            wrapper.scrollLeft = getSetSize();
+            requestAnimationFrame(() => {
+                wrapper.style.scrollBehavior = '';
+            });
+        } else {
+            wrapper.scrollTop = getSetSize();
+        }
 
-            // Inizializza lo scroll a metà per permettere lo scorrimento bidirezionale
-            wrapper.scrollTop = getSetHeight();
+        let targetScroll = isHorizontal ? wrapper.scrollLeft : wrapper.scrollTop;
+        let currentScroll = targetScroll;
+        let isAnimating = false;
 
-            // Variabili per l'inerzia (smooth scroll personalizzato)
-            let targetScroll = wrapper.scrollTop;
-            let currentScroll = wrapper.scrollTop;
-            let isAnimating = false;
+        const scrollSpeed = 0.5;
+        const lerpFactor = 0.08;
 
-            // Impostazioni per il feeling "premium"
-            const scrollSpeed = 0.5; // Moltiplicatore velocità
-            const lerpFactor = 0.08; // Inerzia (scroll più burroso)
-
-            // Intercettiamo lo scroll della rotellina / trackpad
+        if (!isHorizontal) {
             wrapper.addEventListener('wheel', (e) => {
-                // Se non è scrollabile, ignoriamo l'intercetto custom
                 if (wrapper.scrollHeight <= wrapper.clientHeight) return;
-
-                e.preventDefault(); // Blocca lo scroll di default
-
+                e.preventDefault();
                 targetScroll += e.deltaY * scrollSpeed;
-
-                // CLAMP FONDAMENTALE: impedisce a targetScroll di accumulare valori infiniti se l'utente scrosta i bordi fisici
                 const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
                 targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
-
-                // Avvia il loop di animazione se non è già in corso
                 if (!isAnimating) {
                     isAnimating = true;
                     requestAnimationFrame(updateScroll);
                 }
             }, { passive: false });
+        }
 
-            function updateScroll() {
-                // Interpolazione lineare per ammorbidire il movimento
-                currentScroll += (targetScroll - currentScroll) * lerpFactor;
-
-                // Applicando la posizione scateniamo l'evento 'scroll'
+        function updateScroll() {
+            currentScroll += (targetScroll - currentScroll) * lerpFactor;
+            if (isHorizontal) {
+                wrapper.scrollLeft = currentScroll;
+            } else {
                 wrapper.scrollTop = currentScroll;
+            }
+            if (Math.abs(targetScroll - currentScroll) > 0.5) {
+                requestAnimationFrame(updateScroll);
+            } else {
+                isAnimating = false;
+            }
+        }
 
-                // Continua ad animare finché non arriviamo molto vicini al target
-                if (Math.abs(targetScroll - currentScroll) > 0.5) {
-                    requestAnimationFrame(updateScroll);
-                } else {
-                    isAnimating = false;
-                }
+        wrapper.addEventListener('scroll', () => {
+            const setSize = getSetSize();
+            const currentPos = isHorizontal ? wrapper.scrollLeft : wrapper.scrollTop;
+
+            if (!isAnimating) {
+                currentScroll = currentPos;
+                targetScroll = currentPos;
             }
 
-            // Evento scroll nativo (scatenato sia dal nostro updateScroll, sia da touch mobile)
-            wrapper.addEventListener('scroll', () => {
-                const setHeight = getSetHeight();
-
-                // Se l'utente sta usando il touch (non animato da wheel), teniamo le variabili sincronizzate
+            if (currentPos >= setSize * 2) {
+                if (isHorizontal) wrapper.style.scrollBehavior = 'auto';
+                
+                if (isHorizontal) {
+                    wrapper.scrollLeft -= setSize;
+                } else {
+                    wrapper.scrollTop -= setSize;
+                }
+                
                 if (!isAnimating) {
-                    currentScroll = wrapper.scrollTop;
-                    targetScroll = wrapper.scrollTop;
+                    currentScroll = isHorizontal ? wrapper.scrollLeft : wrapper.scrollTop;
+                    targetScroll = currentScroll;
+                } else {
+                    currentScroll -= setSize;
+                    targetScroll -= setSize;
                 }
-
-                // Controllo limiti loop infinito
-                if (wrapper.scrollTop >= setHeight * 2) {
-                    wrapper.scrollTop -= setHeight;
-                    if (!isAnimating) {
-                        currentScroll = wrapper.scrollTop;
-                        targetScroll = wrapper.scrollTop;
-                    } else {
-                        currentScroll -= setHeight;
-                        targetScroll -= setHeight;
-                    }
+                
+                if (isHorizontal) {
+                    requestAnimationFrame(() => {
+                        wrapper.style.scrollBehavior = '';
+                    });
                 }
-                else if (wrapper.scrollTop <= 0) {
-                    wrapper.scrollTop += setHeight;
-                    if (!isAnimating) {
-                        currentScroll = wrapper.scrollTop;
-                        targetScroll = wrapper.scrollTop;
-                    } else {
-                        currentScroll += setHeight;
-                        targetScroll += setHeight;
-                    }
+            }
+            else if (currentPos <= 0) {
+                if (isHorizontal) wrapper.style.scrollBehavior = 'auto';
+                
+                if (isHorizontal) {
+                    wrapper.scrollLeft += setSize;
+                } else {
+                    wrapper.scrollTop += setSize;
                 }
-            });
+                
+                if (!isAnimating) {
+                    currentScroll = isHorizontal ? wrapper.scrollLeft : wrapper.scrollTop;
+                    targetScroll = currentScroll;
+                } else {
+                    currentScroll += setSize;
+                    targetScroll += setSize;
+                }
+                
+                if (isHorizontal) {
+                    requestAnimationFrame(() => {
+                        wrapper.style.scrollBehavior = '';
+                    });
+                }
+            }
         });
-    }
+    });
 
     // -----------------------------------------
     // Animazione Dettaglio Progetto
