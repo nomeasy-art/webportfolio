@@ -404,9 +404,30 @@ h2 {
         display: none;
     }
 
+    .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        padding-bottom: 10px; /* Un po' di spazio sotto le icone */
+    }
+
+    /* Sfondo solido a tutta larghezza per un "taglio netto" senza buchi laterali */
+    .sidebar::before {
+        content: '';
+        position: absolute;
+        top: -24px;
+        left: -24px;
+        width: 100vw;
+        height: calc(100% + 24px); /* Copre l'altezza della sidebar + il padding in alto */
+        background-color: #FFFBEC;
+        z-index: -1;
+        pointer-events: none;
+    }
+
     .project {
-        min-width: 70vw;
-        max-width: 320px;
+        width: calc(100vw - 48px);
+        min-width: calc(100vw - 48px);
+        max-width: none;
         margin-bottom: 0;
         scroll-snap-align: start;
         flex-shrink: 0;
