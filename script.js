@@ -61,11 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
             copiesPerSet = Math.ceil(viewportSize / originalSize);
         }
 
-        // Aumentiamo i set a 40 su mobile per creare un buffer enorme. 
-        // In questo modo, anche se l'utente fa moltissimi swipe consecutivi senza mai fermarsi,
-        // non raggiungerà mai la fine prima che scatti il timeout di riposizionamento.
-        const NUM_SETS = isHorizontal ? 40 : 3;
+        const NUM_SETS = isHorizontal ? 20 : 3;
         const MIDDLE_SET = Math.floor(NUM_SETS / 2);
+        const itemsPerSet = originalChildren.length * copiesPerSet;
 
         wrapper.innerHTML = '';
         for (let set = 0; set < NUM_SETS; set++) {
@@ -74,13 +72,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const getSetSize = () => (isHorizontal ? wrapper.scrollWidth : wrapper.scrollHeight) / NUM_SETS;
-
-        // Inizializza esattamente al set centrale
-        if (isHorizontal) {
-            wrapper.scrollLeft = getSetSize() * MIDDLE_SET;
+        // Calcola la dimensione esatta di un set misurando la distanza fisica tra gli elementi
+        // Questo evita errori causati dal padding globale del wrapper su mobile!
+        let setSize = 0;
+        if (wrapper.children.length >= itemsPerSet + 1) {
+            const first = wrapper.children[0];
+            const next = wrapper.children[itemsPerSet];
+            setSize = isHorizontal ? (next.offsetLeft - first.offsetLeft) : (next.offsetTop - first.offsetTop);
         } else {
-            wrapper.scrollTop = getSetSize() * MIDDLE_SET;
+            setSize = (isHorizontal ? wrapper.scrollWidth : wrapper.scrollHeight) / NUM_SETS;
+        }
+
+        if (isHorizontal) {
+            wrapper.style.scrollSnapType = 'none';
+            wrapper.scrollLeft = setSize * MIDDLE_SET;
+            requestAnimationFrame(() => {
+                wrapper.style.scrollSnapType = '';
+            });
+        } else {
+            wrapper.scrollTop = setSize * MIDDLE_SET;
         }
 
         let targetScroll = isHorizontal ? wrapper.scrollLeft : wrapper.scrollTop;
@@ -121,28 +131,29 @@ document.addEventListener('DOMContentLoaded', () => {
         let scrollTimeout;
 
         wrapper.addEventListener('scroll', () => {
-            const setSize = getSetSize();
+            if (setSize <= 0) return;
 
             if (isHorizontal) {
-                // SU MOBILE: Debounce del teletrasporto. 
-                // Evitiamo di manipolare lo scrollLeft MENTRE l'utente fa lo swipe (momentum iOS Safari)
-                // altrimenti va a scatti e interrompe l'inerzia.
                 clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(() => {
                     const currentPos = wrapper.scrollLeft;
                     const currentSet = Math.floor(currentPos / setSize);
                     
-                    // Se ci siamo allontanati dal set centrale, teletrasportiamo l'utente
-                    // alla stessa esatta posizione ma all'interno del set centrale.
                     if (currentSet !== MIDDLE_SET) {
                         const relativePos = currentPos - (currentSet * setSize);
+                        
+                        // Fondamentale su Safari: rimuovere lo snap per permettere il teletrasporto
+                        wrapper.style.scrollSnapType = 'none';
                         wrapper.scrollLeft = (setSize * MIDDLE_SET) + relativePos;
+                        
+                        // Ripristina lo snap al frame successivo
+                        requestAnimationFrame(() => {
+                            wrapper.style.scrollSnapType = '';
+                        });
                     }
-                }, 150); // 150ms senza eventi di scroll = l'inerzia è finita
+                }, 100); // 100ms
                 
             } else {
-                // SU DESKTOP: Il JS controlla già l'inerzia (isAnimating), quindi il salto sincrono
-                // funziona perfettamente ed è necessario per un ciclo infinito istantaneo.
                 const currentPos = wrapper.scrollTop;
 
                 if (!isAnimating) {
