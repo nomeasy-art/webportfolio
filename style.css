@@ -354,7 +354,9 @@ h2 {
 
 /* Responsive adjustments */
 @media (max-width: 1200px) {
-    html, body {
+
+    html,
+    body {
         overscroll-behavior: auto;
     }
 
@@ -680,6 +682,7 @@ body.detail-closing .close-detail {
     gap: 20px;
     min-height: 0;
     margin-top: 44px;
+    padding-bottom: 20px;
     /* Align with projects which are under 36px header + 8px margin */
 }
 
