@@ -42,111 +42,113 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // ---------------------------
 
-    const scrollWrappers = document.querySelectorAll('.scroll-wrapper');
+    if (window.innerWidth > 1200) {
+        const scrollWrappers = document.querySelectorAll('.scroll-wrapper');
 
-    scrollWrappers.forEach(wrapper => {
-        const originalChildren = Array.from(wrapper.children);
+        scrollWrappers.forEach(wrapper => {
+            const originalChildren = Array.from(wrapper.children);
 
-        // Se l'altezza dei contenuti originali è minore dello schermo, lo scroll infinito si blocca.
-        // Dobbiamo assicurarci che un "singolo set" riempia sempre abbondantemente lo schermo!
-        const originalHeight = wrapper.scrollHeight;
-        let copiesPerSet = 1;
+            // Se l'altezza dei contenuti originali è minore dello schermo, lo scroll infinito si blocca.
+            // Dobbiamo assicurarci che un "singolo set" riempia sempre abbondantemente lo schermo!
+            const originalHeight = wrapper.scrollHeight;
+            let copiesPerSet = 1;
 
-        // Se il contenuto è poco, calcoliamo quante copie servono per superare l'altezza dello schermo
-        if (originalHeight > 0 && originalHeight < window.innerHeight) {
-            copiesPerSet = Math.ceil(window.innerHeight / originalHeight);
-        }
-
-        // Puliamo il contenitore e generiamo 3 set massicci
-        wrapper.innerHTML = '';
-        for (let set = 0; set < 3; set++) {
-            for (let c = 0; c < copiesPerSet; c++) {
-                originalChildren.forEach(child => wrapper.appendChild(child.cloneNode(true)));
-            }
-        }
-
-        const getSetHeight = () => wrapper.scrollHeight / 3;
-
-        // Inizializza lo scroll a metà per permettere lo scorrimento bidirezionale
-        wrapper.scrollTop = getSetHeight();
-
-        // Variabili per l'inerzia (smooth scroll personalizzato)
-        let targetScroll = wrapper.scrollTop;
-        let currentScroll = wrapper.scrollTop;
-        let isAnimating = false;
-
-        // Impostazioni per il feeling "premium"
-        const scrollSpeed = 0.5; // Moltiplicatore velocità
-        const lerpFactor = 0.08; // Inerzia (scroll più burroso)
-
-        // Intercettiamo lo scroll della rotellina / trackpad
-        wrapper.addEventListener('wheel', (e) => {
-            // Se non è scrollabile, ignoriamo l'intercetto custom
-            if (wrapper.scrollHeight <= wrapper.clientHeight) return;
-
-            e.preventDefault(); // Blocca lo scroll di default
-
-            targetScroll += e.deltaY * scrollSpeed;
-
-            // CLAMP FONDAMENTALE: impedisce a targetScroll di accumulare valori infiniti se l'utente scrosta i bordi fisici
-            const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
-            targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
-
-            // Avvia il loop di animazione se non è già in corso
-            if (!isAnimating) {
-                isAnimating = true;
-                requestAnimationFrame(updateScroll);
-            }
-        }, { passive: false });
-
-        function updateScroll() {
-            // Interpolazione lineare per ammorbidire il movimento
-            currentScroll += (targetScroll - currentScroll) * lerpFactor;
-
-            // Applicando la posizione scateniamo l'evento 'scroll'
-            wrapper.scrollTop = currentScroll;
-
-            // Continua ad animare finché non arriviamo molto vicini al target
-            if (Math.abs(targetScroll - currentScroll) > 0.5) {
-                requestAnimationFrame(updateScroll);
-            } else {
-                isAnimating = false;
-            }
-        }
-
-        // Evento scroll nativo (scatenato sia dal nostro updateScroll, sia da touch mobile)
-        wrapper.addEventListener('scroll', () => {
-            const setHeight = getSetHeight();
-
-            // Se l'utente sta usando il touch (non animato da wheel), teniamo le variabili sincronizzate
-            if (!isAnimating) {
-                currentScroll = wrapper.scrollTop;
-                targetScroll = wrapper.scrollTop;
+            // Se il contenuto è poco, calcoliamo quante copie servono per superare l'altezza dello schermo
+            if (originalHeight > 0 && originalHeight < window.innerHeight) {
+                copiesPerSet = Math.ceil(window.innerHeight / originalHeight);
             }
 
-            // Controllo limiti loop infinito
-            if (wrapper.scrollTop >= setHeight * 2) {
-                wrapper.scrollTop -= setHeight;
+            // Puliamo il contenitore e generiamo 3 set massicci
+            wrapper.innerHTML = '';
+            for (let set = 0; set < 3; set++) {
+                for (let c = 0; c < copiesPerSet; c++) {
+                    originalChildren.forEach(child => wrapper.appendChild(child.cloneNode(true)));
+                }
+            }
+
+            const getSetHeight = () => wrapper.scrollHeight / 3;
+
+            // Inizializza lo scroll a metà per permettere lo scorrimento bidirezionale
+            wrapper.scrollTop = getSetHeight();
+
+            // Variabili per l'inerzia (smooth scroll personalizzato)
+            let targetScroll = wrapper.scrollTop;
+            let currentScroll = wrapper.scrollTop;
+            let isAnimating = false;
+
+            // Impostazioni per il feeling "premium"
+            const scrollSpeed = 0.5; // Moltiplicatore velocità
+            const lerpFactor = 0.08; // Inerzia (scroll più burroso)
+
+            // Intercettiamo lo scroll della rotellina / trackpad
+            wrapper.addEventListener('wheel', (e) => {
+                // Se non è scrollabile, ignoriamo l'intercetto custom
+                if (wrapper.scrollHeight <= wrapper.clientHeight) return;
+
+                e.preventDefault(); // Blocca lo scroll di default
+
+                targetScroll += e.deltaY * scrollSpeed;
+
+                // CLAMP FONDAMENTALE: impedisce a targetScroll di accumulare valori infiniti se l'utente scrosta i bordi fisici
+                const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
+                targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+
+                // Avvia il loop di animazione se non è già in corso
+                if (!isAnimating) {
+                    isAnimating = true;
+                    requestAnimationFrame(updateScroll);
+                }
+            }, { passive: false });
+
+            function updateScroll() {
+                // Interpolazione lineare per ammorbidire il movimento
+                currentScroll += (targetScroll - currentScroll) * lerpFactor;
+
+                // Applicando la posizione scateniamo l'evento 'scroll'
+                wrapper.scrollTop = currentScroll;
+
+                // Continua ad animare finché non arriviamo molto vicini al target
+                if (Math.abs(targetScroll - currentScroll) > 0.5) {
+                    requestAnimationFrame(updateScroll);
+                } else {
+                    isAnimating = false;
+                }
+            }
+
+            // Evento scroll nativo (scatenato sia dal nostro updateScroll, sia da touch mobile)
+            wrapper.addEventListener('scroll', () => {
+                const setHeight = getSetHeight();
+
+                // Se l'utente sta usando il touch (non animato da wheel), teniamo le variabili sincronizzate
                 if (!isAnimating) {
                     currentScroll = wrapper.scrollTop;
                     targetScroll = wrapper.scrollTop;
-                } else {
-                    currentScroll -= setHeight;
-                    targetScroll -= setHeight;
                 }
-            }
-            else if (wrapper.scrollTop <= 0) {
-                wrapper.scrollTop += setHeight;
-                if (!isAnimating) {
-                    currentScroll = wrapper.scrollTop;
-                    targetScroll = wrapper.scrollTop;
-                } else {
-                    currentScroll += setHeight;
-                    targetScroll += setHeight;
+
+                // Controllo limiti loop infinito
+                if (wrapper.scrollTop >= setHeight * 2) {
+                    wrapper.scrollTop -= setHeight;
+                    if (!isAnimating) {
+                        currentScroll = wrapper.scrollTop;
+                        targetScroll = wrapper.scrollTop;
+                    } else {
+                        currentScroll -= setHeight;
+                        targetScroll -= setHeight;
+                    }
                 }
-            }
+                else if (wrapper.scrollTop <= 0) {
+                    wrapper.scrollTop += setHeight;
+                    if (!isAnimating) {
+                        currentScroll = wrapper.scrollTop;
+                        targetScroll = wrapper.scrollTop;
+                    } else {
+                        currentScroll += setHeight;
+                        targetScroll += setHeight;
+                    }
+                }
+            });
         });
-    });
+    }
 
     // -----------------------------------------
     // Animazione Dettaglio Progetto
