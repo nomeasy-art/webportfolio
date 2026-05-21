@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             projectEl.innerHTML = `
                 <div class="info-row top-border">${project.title || 'NOME DEL PROGETTO'}</div>
                 <div class="info-row">${project.collaborator || ''}</div>
-                <div class="info-row"> ${project.year || ''}</div>
+                <div class="info-row">ANNO ${project.year || ''}</div>
                 <div class="project-image-placeholder" ${project.mainImageUrl ? `style="background-image: url('${project.mainImageUrl}?w=600'); background-size: cover; background-position: center;"` : ''}></div>
             `;
             wrapper.appendChild(projectEl);
