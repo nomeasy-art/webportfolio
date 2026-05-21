@@ -1,5 +1,5 @@
 :root {
-    --bg-color: #FFFBF0;
+    --bg-color: #FFFBEC;
     --text-color: #1A1A1A;
     --border-color: #E2DEC9;
     --placeholder-bg: #EAE7D9;
@@ -14,6 +14,7 @@
 html {
     overflow-x: hidden;
     max-width: 100%;
+    overscroll-behavior: none;
 }
 
 body {
@@ -23,6 +24,7 @@ body {
     font-weight: 300;
     height: 100vh;
     overflow: hidden;
+    overscroll-behavior: none;
     padding: 40px 50px 0 50px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -352,6 +354,10 @@ h2 {
 
 /* Responsive adjustments */
 @media (max-width: 1200px) {
+    html, body {
+        overscroll-behavior: auto;
+    }
+
     body {
         height: auto;
         overflow: visible;
@@ -546,7 +552,8 @@ h2 {
         transition-delay: 0s;
     }
 
-    body.detail-active:not(.detail-closing) .sidebar {
+    body.detail-active:not(.detail-closing) .sidebar,
+    body.detail-active:not(.detail-closing) .mobile-footer {
         display: none !important;
     }
 
@@ -670,7 +677,7 @@ body.detail-closing .close-detail {
     -ms-overflow-style: none;
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 20px;
     min-height: 0;
     margin-top: 44px;
     /* Align with projects which are under 36px header + 8px margin */
@@ -697,7 +704,7 @@ body.detail-closing .close-detail {
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding-bottom: 2rem;
+    padding-bottom: 22px;
 }
 
 .active-project-info::-webkit-scrollbar {
@@ -747,5 +754,12 @@ body.detail-active .active-column .scroll-wrapper {
         border-left: none;
         margin-left: 0;
         padding-left: 0;
+        border-top: 1px solid var(--border-color);
+        padding-top: 28px;
+    }
+
+    .detail-scroll {
+        margin-top: 0;
+        /* Remove top margin since we added padding-top to the parent, keeping total space identical */
     }
 }

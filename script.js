@@ -61,13 +61,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!footer) return;
 
         // Reset to CSS defined padding to measure natural height
-        footer.style.paddingBottom = ''; 
+        footer.style.paddingBottom = '';
 
         // Force synchronous layout recalculation
         const lastColRect = lastCol.getBoundingClientRect();
         const lastColTop = lastColRect.top + window.pageYOffset;
         const currentDocHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-        
+
         // Calculate the minimum document height required to allow scrolling lastCol to the top
         const requiredDocHeight = lastColTop + window.innerHeight;
 
@@ -144,16 +144,19 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentScroll = targetScroll;
         let isAnimating = false;
 
-        const scrollSpeed = 0.5;
+        // Parametri per una fluidità eccellente
+        const scrollSpeed = 0.8;
         const lerpFactor = 0.08;
 
         if (!isHorizontal) {
             wrapper.addEventListener('wheel', (e) => {
                 if (wrapper.scrollHeight <= wrapper.clientHeight) return;
                 e.preventDefault();
+
                 targetScroll += e.deltaY * scrollSpeed;
                 const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
                 targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+
                 if (!isAnimating) {
                     isAnimating = true;
                     requestAnimationFrame(updateScroll);
@@ -163,14 +166,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function updateScroll() {
             currentScroll += (targetScroll - currentScroll) * lerpFactor;
-            if (isHorizontal) {
-                wrapper.scrollLeft = currentScroll;
-            } else {
+
+            // Loop infinito in perfetta sincronia con i frame di animazione
+            if (!isHorizontal && setSize > 0) {
+                if (currentScroll >= setSize * (MIDDLE_SET + 1)) {
+                    currentScroll -= setSize;
+                    targetScroll -= setSize;
+                } else if (currentScroll <= setSize * (MIDDLE_SET - 1)) {
+                    currentScroll += setSize;
+                    targetScroll += setSize;
+                }
+            }
+
+            if (!isHorizontal) {
                 wrapper.scrollTop = currentScroll;
             }
+
             if (Math.abs(targetScroll - currentScroll) > 0.5) {
                 requestAnimationFrame(updateScroll);
             } else {
+                currentScroll = targetScroll;
+                if (!isHorizontal) wrapper.scrollTop = currentScroll;
                 isAnimating = false;
             }
         }
@@ -185,47 +201,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 scrollTimeout = setTimeout(() => {
                     const currentPos = wrapper.scrollLeft;
                     const currentSet = Math.floor(currentPos / setSize);
-                    
+
                     if (currentSet !== MIDDLE_SET) {
                         const relativePos = currentPos - (currentSet * setSize);
-                        
-                        // Fondamentale su Safari: rimuovere lo snap per permettere il teletrasporto
+
                         wrapper.style.scrollSnapType = 'none';
                         wrapper.scrollLeft = (setSize * MIDDLE_SET) + relativePos;
-                        
-                        // Ripristina lo snap al frame successivo
+
                         requestAnimationFrame(() => {
                             wrapper.style.scrollSnapType = '';
                         });
                     }
-                }, 100); // 100ms
-                
+                }, 100);
             } else {
-                const currentPos = wrapper.scrollTop;
-
+                // Per interazioni non-mouse (es. tastiera) su desktop
                 if (!isAnimating) {
-                    currentScroll = currentPos;
-                    targetScroll = currentPos;
-                }
-
-                if (currentPos >= setSize * (MIDDLE_SET + 1)) {
-                    wrapper.scrollTop -= setSize;
-                    if (!isAnimating) {
+                    const currentPos = wrapper.scrollTop;
+                    const currentSet = Math.floor(currentPos / setSize);
+                    if (currentSet !== MIDDLE_SET) {
+                        const relativePos = currentPos - (currentSet * setSize);
+                        wrapper.scrollTop = (setSize * MIDDLE_SET) + relativePos;
                         currentScroll = wrapper.scrollTop;
                         targetScroll = wrapper.scrollTop;
-                    } else {
-                        currentScroll -= setSize;
-                        targetScroll -= setSize;
-                    }
-                }
-                else if (currentPos <= setSize * (MIDDLE_SET - 1)) {
-                    wrapper.scrollTop += setSize;
-                    if (!isAnimating) {
-                        currentScroll = wrapper.scrollTop;
-                        targetScroll = wrapper.scrollTop;
-                    } else {
-                        currentScroll += setSize;
-                        targetScroll += setSize;
                     }
                 }
             }
@@ -286,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Clona le righe info
             const infoRows = project.querySelectorAll('.info-row');
             infoRows.forEach(row => stickyInfo.appendChild(row.cloneNode(true)));
-            
+
             projectWrapper.appendChild(stickyInfo);
 
             // Clona l'immagine
@@ -308,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.innerWidth <= 768) {
                 setTimeout(() => {
                     window.scrollTo({
-                        top: 0, 
+                        top: 0,
                         behavior: 'smooth'
                     });
                 }, 50); // Piccolo delay per assicurarsi che il DOM sia renderizzato
@@ -350,6 +347,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     document.body.classList.remove('detail-active');
                     document.body.classList.remove('detail-closing');
+
+                    // Ripristina lo scorrimento della galleria immagini all'inizio
+                    const detailScroll = document.querySelector('.detail-scroll');
+                    if (detailScroll) {
+                        detailScroll.scrollTop = 0;
+                        detailScroll.scrollLeft = 0;
+                    }
                 }, 800);
             });
         });
