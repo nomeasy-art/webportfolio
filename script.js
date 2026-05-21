@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    let savedScrollPositionMobile = 0;
     // --- CUSTOM CURSOR LOGIC ---
     const cursor = document.createElement('div');
     cursor.className = 'custom-cursor';
@@ -264,11 +265,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Su mobile, fai scorrere la pagina verso l'alto per mostrare l'inizio del progetto
             if (window.innerWidth <= 768) {
+                savedScrollPositionMobile = window.pageYOffset || document.documentElement.scrollTop;
                 setTimeout(() => {
-                    const rect = col.getBoundingClientRect();
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                     window.scrollTo({
-                        top: rect.top + scrollTop - 24, // -24 per considerare il padding-top del body
+                        top: 0, 
                         behavior: 'smooth'
                     });
                 }, 50); // Piccolo delay per assicurarsi che il DOM sia renderizzato
@@ -281,6 +281,13 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', () => {
                 // Aggiungi la classe di chiusura per innescare l'animazione di uscita
                 document.body.classList.add('detail-closing');
+
+                // Ripristina lo scroll su mobile immediatamente per nascondere lo spostamento
+                if (window.innerWidth <= 768) {
+                    setTimeout(() => {
+                        window.scrollTo(0, savedScrollPositionMobile);
+                    }, 10);
+                }
 
                 // Aspetta che l'animazione di uscita (0.8s) sia completata
                 setTimeout(() => {
