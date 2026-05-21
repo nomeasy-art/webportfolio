@@ -1,10 +1,10 @@
 import { createClient } from 'https://esm.sh/@sanity/client';
 
 const client = createClient({
-  projectId: 'j1hydh9x',
-  dataset: 'production',
-  useCdn: true,
-  apiVersion: '2023-05-03',
+    projectId: 'j1hydh9x',
+    dataset: 'production',
+    useCdn: true,
+    apiVersion: '2023-05-03',
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -16,23 +16,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             "gallery": galleryImages[].asset->url,
             externalLink, featured
         }`);
-        
+
         projects.forEach(project => {
             const category = project.category || 'editorial';
             const wrapper = document.getElementById(`${category}-wrapper`);
             if (!wrapper) return;
-            
+
             const projectEl = document.createElement('div');
             projectEl.className = 'project';
-            
+
             // Store data for detail view
             projectEl.dataset.description = project.description || '';
             projectEl.dataset.gallery = JSON.stringify(project.gallery || []);
-            
+
             projectEl.innerHTML = `
                 <div class="info-row top-border">${project.title || 'NOME DEL PROGETTO'}</div>
                 <div class="info-row">${project.collaborator || ''}</div>
-                <div class="info-row">ANNO ${project.year || ''}</div>
+                <div class="info-row"> ${project.year || ''}</div>
                 <div class="project-image-placeholder" ${project.mainImageUrl ? `style="background-image: url('${project.mainImageUrl}?w=600'); background-size: cover; background-position: center;"` : ''}></div>
             `;
             wrapper.appendChild(projectEl);
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             projectWrapper.appendChild(desc);
 
             infoContainer.appendChild(projectWrapper);
-            
+
             // --- GENERAZIONE GALLERIA IMMAGINI ---
             const detailScroll = document.querySelector('.detail-scroll');
             if (detailScroll) {
