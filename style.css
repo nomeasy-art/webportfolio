@@ -521,6 +521,25 @@ h2 {
         pointer-events: none;
         transition-delay: 0s;
     }
+
+    body.detail-active .active-column .category-header {
+        position: sticky;
+        top: 24px;
+        z-index: 20;
+        background: var(--bg-color);
+        margin: 0 -24px;
+        padding: 0 24px 8px 24px;
+        height: 44px; /* Maintain original height + bottom padding space */
+    }
+
+    body.detail-active .active-column .sticky-info-mobile {
+        position: sticky;
+        top: 68px; /* 24px body padding + 44px header height */
+        z-index: 20;
+        background: var(--bg-color);
+        margin: 0 -24px;
+        padding: 0 24px;
+    }
 }
 
 /* Project Detail View */

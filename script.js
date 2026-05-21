@@ -238,9 +238,14 @@ document.addEventListener('DOMContentLoaded', () => {
             projectWrapper.className = 'project';
             projectWrapper.style.marginBottom = '0'; // Rimuoviamo il margine inferiore enorme
 
+            const stickyInfo = document.createElement('div');
+            stickyInfo.className = 'sticky-info-mobile';
+
             // Clona le righe info
             const infoRows = project.querySelectorAll('.info-row');
-            infoRows.forEach(row => projectWrapper.appendChild(row.cloneNode(true)));
+            infoRows.forEach(row => stickyInfo.appendChild(row.cloneNode(true)));
+            
+            projectWrapper.appendChild(stickyInfo);
 
             // Clona l'immagine
             const imgClone = placeholder.cloneNode(true);
@@ -256,6 +261,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Aggiungila alla colonna
             col.appendChild(infoContainer);
+
+            // Su mobile, fai scorrere la pagina verso l'alto per mostrare l'inizio del progetto
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    const rect = col.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    window.scrollTo({
+                        top: rect.top + scrollTop - 24, // -24 per considerare il padding-top del body
+                        behavior: 'smooth'
+                    });
+                }, 50); // Piccolo delay per assicurarsi che il DOM sia renderizzato
+            }
         });
     });
 
