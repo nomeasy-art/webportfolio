@@ -61,9 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
             copiesPerSet = Math.ceil(viewportSize / originalSize);
         }
 
-        // Aumentiamo i set a 7 per avere un buffer molto ampio per lo swipe su mobile
-        const NUM_SETS = 7;
-        const MIDDLE_SET = 3;
+        // Aumentiamo i set a 40 su mobile per creare un buffer enorme. 
+        // In questo modo, anche se l'utente fa moltissimi swipe consecutivi senza mai fermarsi,
+        // non raggiungerà mai la fine prima che scatti il timeout di riposizionamento.
+        const NUM_SETS = isHorizontal ? 40 : 3;
+        const MIDDLE_SET = Math.floor(NUM_SETS / 2);
 
         wrapper.innerHTML = '';
         for (let set = 0; set < NUM_SETS; set++) {
