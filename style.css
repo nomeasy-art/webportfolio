@@ -754,6 +754,8 @@ body.detail-active .active-column .scroll-wrapper {
         border-left: none;
         margin-left: 0;
         padding-left: 0;
+        padding-right: 0;
+        width: 100%;
         border-top: 1px solid var(--border-color);
         padding-top: 28px;
     }
