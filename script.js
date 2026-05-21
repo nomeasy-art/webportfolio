@@ -61,23 +61,24 @@ document.addEventListener('DOMContentLoaded', () => {
             copiesPerSet = Math.ceil(viewportSize / originalSize);
         }
 
+        // Aumentiamo i set a 7 per avere un buffer molto ampio per lo swipe su mobile
+        const NUM_SETS = 7;
+        const MIDDLE_SET = 3;
+
         wrapper.innerHTML = '';
-        for (let set = 0; set < 3; set++) {
+        for (let set = 0; set < NUM_SETS; set++) {
             for (let c = 0; c < copiesPerSet; c++) {
                 originalChildren.forEach(child => wrapper.appendChild(child.cloneNode(true)));
             }
         }
 
-        const getSetSize = () => (isHorizontal ? wrapper.scrollWidth : wrapper.scrollHeight) / 3;
+        const getSetSize = () => (isHorizontal ? wrapper.scrollWidth : wrapper.scrollHeight) / NUM_SETS;
 
+        // Inizializza esattamente al set centrale
         if (isHorizontal) {
-            wrapper.style.scrollBehavior = 'auto';
-            wrapper.scrollLeft = getSetSize();
-            requestAnimationFrame(() => {
-                wrapper.style.scrollBehavior = '';
-            });
+            wrapper.scrollLeft = getSetSize() * MIDDLE_SET;
         } else {
-            wrapper.scrollTop = getSetSize();
+            wrapper.scrollTop = getSetSize() * MIDDLE_SET;
         }
 
         let targetScroll = isHorizontal ? wrapper.scrollLeft : wrapper.scrollTop;
@@ -115,59 +116,57 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        let scrollTimeout;
+
         wrapper.addEventListener('scroll', () => {
             const setSize = getSetSize();
-            const currentPos = isHorizontal ? wrapper.scrollLeft : wrapper.scrollTop;
 
-            if (!isAnimating) {
-                currentScroll = currentPos;
-                targetScroll = currentPos;
-            }
-
-            if (currentPos >= setSize * 2) {
-                if (isHorizontal) wrapper.style.scrollBehavior = 'auto';
+            if (isHorizontal) {
+                // SU MOBILE: Debounce del teletrasporto. 
+                // Evitiamo di manipolare lo scrollLeft MENTRE l'utente fa lo swipe (momentum iOS Safari)
+                // altrimenti va a scatti e interrompe l'inerzia.
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    const currentPos = wrapper.scrollLeft;
+                    const currentSet = Math.floor(currentPos / setSize);
+                    
+                    // Se ci siamo allontanati dal set centrale, teletrasportiamo l'utente
+                    // alla stessa esatta posizione ma all'interno del set centrale.
+                    if (currentSet !== MIDDLE_SET) {
+                        const relativePos = currentPos - (currentSet * setSize);
+                        wrapper.scrollLeft = (setSize * MIDDLE_SET) + relativePos;
+                    }
+                }, 150); // 150ms senza eventi di scroll = l'inerzia è finita
                 
-                if (isHorizontal) {
-                    wrapper.scrollLeft -= setSize;
-                } else {
+            } else {
+                // SU DESKTOP: Il JS controlla già l'inerzia (isAnimating), quindi il salto sincrono
+                // funziona perfettamente ed è necessario per un ciclo infinito istantaneo.
+                const currentPos = wrapper.scrollTop;
+
+                if (!isAnimating) {
+                    currentScroll = currentPos;
+                    targetScroll = currentPos;
+                }
+
+                if (currentPos >= setSize * (MIDDLE_SET + 1)) {
                     wrapper.scrollTop -= setSize;
+                    if (!isAnimating) {
+                        currentScroll = wrapper.scrollTop;
+                        targetScroll = wrapper.scrollTop;
+                    } else {
+                        currentScroll -= setSize;
+                        targetScroll -= setSize;
+                    }
                 }
-                
-                if (!isAnimating) {
-                    currentScroll = isHorizontal ? wrapper.scrollLeft : wrapper.scrollTop;
-                    targetScroll = currentScroll;
-                } else {
-                    currentScroll -= setSize;
-                    targetScroll -= setSize;
-                }
-                
-                if (isHorizontal) {
-                    requestAnimationFrame(() => {
-                        wrapper.style.scrollBehavior = '';
-                    });
-                }
-            }
-            else if (currentPos <= 0) {
-                if (isHorizontal) wrapper.style.scrollBehavior = 'auto';
-                
-                if (isHorizontal) {
-                    wrapper.scrollLeft += setSize;
-                } else {
+                else if (currentPos <= setSize * (MIDDLE_SET - 1)) {
                     wrapper.scrollTop += setSize;
-                }
-                
-                if (!isAnimating) {
-                    currentScroll = isHorizontal ? wrapper.scrollLeft : wrapper.scrollTop;
-                    targetScroll = currentScroll;
-                } else {
-                    currentScroll += setSize;
-                    targetScroll += setSize;
-                }
-                
-                if (isHorizontal) {
-                    requestAnimationFrame(() => {
-                        wrapper.style.scrollBehavior = '';
-                    });
+                    if (!isAnimating) {
+                        currentScroll = wrapper.scrollTop;
+                        targetScroll = wrapper.scrollTop;
+                    } else {
+                        currentScroll += setSize;
+                        targetScroll += setSize;
+                    }
                 }
             }
         });

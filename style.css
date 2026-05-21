@@ -393,7 +393,6 @@ h2 {
         gap: 15px;
         scroll-snap-type: x mandatory;
         scroll-padding: 0 24px;
-        scroll-behavior: smooth;
         scrollbar-width: none;
         -ms-overflow-style: none;
         margin: 0 -24px;
