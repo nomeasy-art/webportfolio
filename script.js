@@ -1,4 +1,47 @@
-document.addEventListener('DOMContentLoaded', () => {
+import { createClient } from 'https://esm.sh/@sanity/client';
+
+const client = createClient({
+  projectId: 'j1hydh9x',
+  dataset: 'production',
+  useCdn: true,
+  apiVersion: '2023-05-03',
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // --- FETCH PROJECTS FROM SANITY ---
+    try {
+        const projects = await client.fetch(`*[_type == "project"] | order(order asc) {
+            title, slug, collaborator, year, description, category, tags,
+            "mainImageUrl": mainImage.asset->url,
+            "gallery": galleryImages[].asset->url,
+            externalLink, featured
+        }`);
+        
+        projects.forEach(project => {
+            const category = project.category || 'editorial';
+            const wrapper = document.getElementById(`${category}-wrapper`);
+            if (!wrapper) return;
+            
+            const projectEl = document.createElement('div');
+            projectEl.className = 'project';
+            
+            // Store data for detail view
+            projectEl.dataset.description = project.description || '';
+            projectEl.dataset.gallery = JSON.stringify(project.gallery || []);
+            
+            projectEl.innerHTML = `
+                <div class="info-row top-border">${project.title || 'NOME DEL PROGETTO'}</div>
+                <div class="info-row">${project.collaborator || ''}</div>
+                <div class="info-row">ANNO ${project.year || ''}</div>
+                <div class="project-image-placeholder" ${project.mainImageUrl ? `style="background-image: url('${project.mainImageUrl}?w=600'); background-size: cover; background-position: center;"` : ''}></div>
+            `;
+            wrapper.appendChild(projectEl);
+        });
+    } catch (err) {
+        console.error("Error fetching Sanity projects:", err);
+    }
+    // ----------------------------------
+
     // --- CUSTOM CURSOR LOGIC ---
     const cursor = document.createElement('div');
     cursor.className = 'custom-cursor';
@@ -293,10 +336,37 @@ document.addEventListener('DOMContentLoaded', () => {
             // Aggiungi la descrizione
             const desc = document.createElement('p');
             desc.className = 'project-description';
-            desc.innerHTML = `Questo progetto esplora le intersezioni tra design editoriale e interfacce digitali.<br><br>L'obiettivo principale è stato quello di creare un'esperienza fluida, riducendo al minimo la frizione visiva e valorizzando i contenuti centrali.<br><br>Attraverso un attento studio tipografico e una palette colori minimale, l'occhio del lettore viene guidato in modo naturale e intuitivo lungo tutta la pagina.<br><br>Ogni singolo elemento, dalle spaziature millimetriche alle animazioni impercettibili, è stato concepito per garantire la massima leggibilità.`;
+            // Usa la descrizione da Sanity, mantenendo le newline come <br>
+            const rawDesc = project.dataset.description || '';
+            desc.innerHTML = rawDesc.replace(/\n/g, '<br>');
             projectWrapper.appendChild(desc);
 
             infoContainer.appendChild(projectWrapper);
+            
+            // --- GENERAZIONE GALLERIA IMMAGINI ---
+            const detailScroll = document.querySelector('.detail-scroll');
+            if (detailScroll) {
+                detailScroll.innerHTML = ''; // Svuota la galleria precedente
+                try {
+                    const galleryUrls = JSON.parse(project.dataset.gallery || '[]');
+                    galleryUrls.forEach(url => {
+                        const imgDiv = document.createElement('div');
+                        imgDiv.className = 'large-image';
+                        imgDiv.style.backgroundImage = `url('${url}?w=1200')`;
+                        imgDiv.style.backgroundSize = 'cover';
+                        imgDiv.style.backgroundPosition = 'center';
+                        detailScroll.appendChild(imgDiv);
+                    });
+                    if (galleryUrls.length === 0) {
+                        // fallback if no gallery
+                        const imgDiv = document.createElement('div');
+                        imgDiv.className = 'large-image';
+                        detailScroll.appendChild(imgDiv);
+                    }
+                } catch (e) {
+                    console.error("Error parsing gallery images", e);
+                }
+            }
 
             // Aggiungila alla colonna
             col.appendChild(infoContainer);
