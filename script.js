@@ -50,6 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Skip infinite scroll for detail-scroll on mobile
+        if (window.innerWidth <= 768 && wrapper.classList.contains('detail-scroll')) {
+            return;
+        }
+
         const isHorizontal = window.innerWidth <= 768;
         const originalChildren = Array.from(wrapper.children);
 
@@ -191,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const placeholders = document.querySelectorAll('.project-image-placeholder');
     const allCols = document.querySelectorAll('.category-column');
     const allColumnsIncludingSidebar = Array.from(document.querySelectorAll('.column'));
-    const closeBtn = document.querySelector('.close-detail');
+    const closeBtns = document.querySelectorAll('.close-detail, .close-detail-mobile');
 
     placeholders.forEach(placeholder => {
         placeholder.addEventListener('click', () => {
@@ -254,29 +259,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            // Aggiungi la classe di chiusura per innescare l'animazione di uscita
-            document.body.classList.add('detail-closing');
+    if (closeBtns.length > 0) {
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Aggiungi la classe di chiusura per innescare l'animazione di uscita
+                document.body.classList.add('detail-closing');
 
-            // Aspetta che l'animazione di uscita (0.8s) sia completata
-            setTimeout(() => {
-                document.body.classList.remove('detail-active');
-                document.body.classList.remove('detail-closing');
-            }, 800);
+                // Aspetta che l'animazione di uscita (0.8s) sia completata
+                setTimeout(() => {
+                    document.body.classList.remove('detail-active');
+                    document.body.classList.remove('detail-closing');
+                }, 800);
 
-            // Ripristina tutte le colonne alla loro posizione originale
-            allCols.forEach(c => {
-                c.classList.remove('hidden-column');
-                c.classList.remove('active-column');
-                c.style.transform = ''; // Annulla il translateX
+                // Ripristina tutte le colonne alla loro posizione originale
+                allCols.forEach(c => {
+                    c.classList.remove('hidden-column');
+                    c.classList.remove('active-column');
+                    c.style.transform = ''; // Annulla il translateX
 
-                // Rimuovi il blocco info
-                const oldInfo = c.querySelector('.active-project-info');
-                if (oldInfo) {
-                    oldInfo.style.animation = 'fadeOut 0.3s ease forwards';
-                    setTimeout(() => oldInfo.remove(), 300);
-                }
+                    // Rimuovi il blocco info
+                    const oldInfo = c.querySelector('.active-project-info');
+                    if (oldInfo) {
+                        oldInfo.style.animation = 'fadeOut 0.3s ease forwards';
+                        setTimeout(() => oldInfo.remove(), 300);
+                    }
+                });
             });
         });
     }
