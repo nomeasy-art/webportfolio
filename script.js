@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    let savedScrollPositionMobile = 0;
     // --- CUSTOM CURSOR LOGIC ---
     const cursor = document.createElement('div');
     cursor.className = 'custom-cursor';
@@ -265,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Su mobile, fai scorrere la pagina verso l'alto per mostrare l'inizio del progetto
             if (window.innerWidth <= 768) {
-                savedScrollPositionMobile = window.pageYOffset || document.documentElement.scrollTop;
                 setTimeout(() => {
                     window.scrollTo({
                         top: 0, 
@@ -279,21 +277,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeBtns.length > 0) {
         closeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                const activeCol = document.querySelector('.category-column.active-column');
+
                 // Aggiungi la classe di chiusura per innescare l'animazione di uscita
                 document.body.classList.add('detail-closing');
-
-                // Ripristina lo scroll su mobile immediatamente per nascondere lo spostamento
-                if (window.innerWidth <= 768) {
-                    setTimeout(() => {
-                        window.scrollTo(0, savedScrollPositionMobile);
-                    }, 10);
-                }
-
-                // Aspetta che l'animazione di uscita (0.8s) sia completata
-                setTimeout(() => {
-                    document.body.classList.remove('detail-active');
-                    document.body.classList.remove('detail-closing');
-                }, 800);
 
                 // Ripristina tutte le colonne alla loro posizione originale
                 allCols.forEach(c => {
@@ -308,6 +295,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         setTimeout(() => oldInfo.remove(), 300);
                     }
                 });
+
+                // Ripristina lo scroll su mobile allineando la colonna sincronicamente per evitare flash visivi
+                if (window.innerWidth <= 768 && activeCol) {
+                    const rect = activeCol.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const targetScroll = rect.top + scrollTop;
+                    window.scrollTo(0, targetScroll);
+                }
+
+                // Aspetta che l'animazione di uscita (0.8s) sia completata
+                setTimeout(() => {
+                    document.body.classList.remove('detail-active');
+                    document.body.classList.remove('detail-closing');
+                }, 800);
             });
         });
     }

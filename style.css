@@ -165,6 +165,17 @@ h2 {
     color: #1A1A1A;
 }
 
+.sidebar-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.mobile-footer {
+    display: none;
+}
+
 .category-header {
     display: flex;
     justify-content: space-between;
@@ -435,7 +446,7 @@ h2 {
     }
 
     .sidebar {
-        padding-bottom: 10px;
+        padding-bottom: 0px;
         /* Un po' di spazio sotto le icone */
     }
 
@@ -449,9 +460,22 @@ h2 {
     }
 
     .sidebar-footer {
-        padding-top: 0;
-        padding-bottom: 0;
-        margin-top: 0.8rem;
+        display: none !important;
+    }
+
+    .mobile-footer {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        padding-top: 210px;
+        padding-bottom: 18px;
+        /* Provides necessary scroll space for User Interface column */
+        width: 100%;
+    }
+
+    .mobile-footer .social-icons {
+        display: flex;
+        gap: 2rem;
     }
 
     .details-section {
@@ -554,7 +578,7 @@ h2 {
         padding: 0 24px 10px 24px;
     }
 
-    body.detail-active:not(.detail-closing) .active-column .active-project-info {
+    body.detail-active .active-project-info {
         padding-top: 135px;
         overflow-y: visible !important;
     }
