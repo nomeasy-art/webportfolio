@@ -7,6 +7,75 @@ const client = createClient({
     apiVersion: '2023-05-03',
 });
 
+// --- UTILITY: PREMIUM SMOOTH SCROLL (INERTIAL LERP) ---
+function setupSmoothScroll(element, speed = 0.6, lerp = 0.08) {
+    if (!element) return null;
+
+    let targetScroll = element.scrollTop;
+    let currentScroll = targetScroll;
+    let isAnimating = false;
+
+    const onWheel = (e) => {
+        // Skip smooth scrolling on mobile (screen <= 768px)
+        if (window.innerWidth <= 768) return;
+        if (element.scrollHeight <= element.clientHeight) return;
+
+        e.preventDefault();
+
+        targetScroll += e.deltaY * speed;
+        const maxScroll = element.scrollHeight - element.clientHeight;
+        targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+
+        if (!isAnimating) {
+            isAnimating = true;
+            requestAnimationFrame(updateScroll);
+        }
+    };
+
+    element.addEventListener('wheel', onWheel, { passive: false });
+
+    function updateScroll() {
+        if (window.innerWidth <= 768) {
+            isAnimating = false;
+            return;
+        }
+
+        currentScroll += (targetScroll - currentScroll) * lerp;
+        element.scrollTop = currentScroll;
+
+        if (Math.abs(targetScroll - currentScroll) > 0.5) {
+            requestAnimationFrame(updateScroll);
+        } else {
+            currentScroll = targetScroll;
+            element.scrollTop = currentScroll;
+            isAnimating = false;
+        }
+    }
+
+    const instance = {
+        reset: () => {
+            targetScroll = element.scrollTop;
+            currentScroll = element.scrollTop;
+            isAnimating = false;
+        },
+        destroy: () => {
+            element.removeEventListener('wheel', onWheel);
+        }
+    };
+
+    element.smoothScrollInstance = instance;
+
+    // Synchronize scroll parameters if the container is scrolled via keypress, search, or code
+    element.addEventListener('scroll', () => {
+        if (!isAnimating) {
+            targetScroll = element.scrollTop;
+            currentScroll = element.scrollTop;
+        }
+    });
+
+    return instance;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // --- FETCH PROJECTS FROM SANITY ---
     try {
@@ -84,6 +153,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     // ---------------------------
+
+    // --- SETUP STATIC SMOOTH SCROLLS ---
+    const detailsSection = document.querySelector('.details-section');
+    if (detailsSection) {
+        setupSmoothScroll(detailsSection, 0.7, 0.08);
+    }
+
+    const detailScroll = document.querySelector('.detail-scroll');
+    if (detailScroll) {
+        setupSmoothScroll(detailScroll, 0.7, 0.08);
+    }
+    // ------------------------------------
 
     // --- DYNAMIC MOBILE FOOTER SPACING ---
     function adjustMobileFooterSpacing() {
@@ -371,6 +452,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Aggiungila alla colonna
             col.appendChild(infoContainer);
 
+            // Applica il smooth scroll anche alla colonna info dinamica
+            setupSmoothScroll(infoContainer, 0.7, 0.08);
+
             // Su mobile, fai scorrere la pagina verso l'alto per mostrare l'inizio del progetto
             if (window.innerWidth <= 768) {
                 setTimeout(() => {
@@ -423,6 +507,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (detailScroll) {
                         detailScroll.scrollTop = 0;
                         detailScroll.scrollLeft = 0;
+                        if (detailScroll.smoothScrollInstance) {
+                            detailScroll.smoothScrollInstance.reset();
+                        }
                     }
                 }, 800);
             });

@@ -211,6 +211,8 @@ h2 {
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding-bottom: 2rem;
+    will-change: transform;
+    transform: translate3d(0,0,0);
 }
 
 .details-section::-webkit-scrollbar {
@@ -684,6 +686,8 @@ body.detail-closing .close-detail {
     margin-top: 44px;
     padding-bottom: 20px;
     /* Align with projects which are under 36px header + 8px margin */
+    will-change: transform;
+    transform: translate3d(0,0,0);
 }
 
 .detail-scroll::-webkit-scrollbar {
@@ -708,6 +712,8 @@ body.detail-closing .close-detail {
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding-bottom: 22px;
+    will-change: transform;
+    transform: translate3d(0,0,0);
 }
 
 .active-project-info::-webkit-scrollbar {
