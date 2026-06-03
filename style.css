@@ -247,10 +247,6 @@ h2 {
     line-height: 1;
 }
 
-.bio-toggle.active {
-    border-bottom-color: transparent;
-}
-
 .bio-content {
     max-height: 0;
     overflow: hidden;
@@ -266,11 +262,16 @@ h2 {
     border-bottom: 1px solid var(--border-color);
 }
 
+.sidebar {
+    padding-right: 1px;
+}
+
 .bio-image-placeholder {
     width: 100%;
-    aspect-ratio: 1.1;
+    aspect-ratio: 0.8;
     background-color: var(--placeholder-bg);
-    margin: 10px 0px 15px 0px;
+    margin-top: calc(1rem - 1.5px);
+    margin-bottom: 15px;
     background-image: url('ChatGPT%20Image%203%20giu%202026,%2021_48_51%20(1).png');
     background-size: cover;
     background-position: center 20%;
