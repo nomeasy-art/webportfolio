@@ -1,6 +1,6 @@
 media:
-  path: images/projects
-  public_path: images/projects
+  input: images/projects
+  output: images/projects
 
 content:
   - name: projects
@@ -51,7 +51,9 @@ content:
       - name: gallery
         label: Galleria Immagini
         type: image
-        list: true
+        options:
+          multiple:
+            max: 20
       - name: externalLink
         label: Link Esterno
         type: string
@@ -61,3 +63,11 @@ content:
       - name: order
         label: Ordine
         type: number
+    view:
+      fields: [mainImageUrl, title, category, year, featured]
+      primary: title
+      sort: [order, title, year]
+      search: [title, description, collaborator, tags]
+      default:
+        sort: order
+        order: asc
