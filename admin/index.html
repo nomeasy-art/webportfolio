@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reindirizzamento all'Area Riservata</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@300&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --text-color: #f5f5f7;
+            --accent-color: #3b82f6;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .redirect-container {
+            text-align: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 40px 60px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            max-width: 400px;
+            width: 90%;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        h2 {
+            font-family: 'Chivo Mono', monospace;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin: 0 0 20px 0;
+            font-weight: 300;
+        }
+
+        p {
+            font-size: 0.95rem;
+            opacity: 0.7;
+            margin: 0 0 30px 0;
+            line-height: 1.6;
+        }
+
+        .spinner {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 30px auto;
+        }
+
+        .spinner-ring {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            animation: rotate 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-top-color: var(--accent-color);
+        }
+
+        .btn-manual {
+            display: inline-block;
+            background: var(--text-color);
+            color: var(--bg-color);
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .btn-manual:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        const REDIRECT_URL = 'https://app.pagescms.org/dashboard/github/nomeasy-art/webportfolio';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                window.location.href = REDIRECT_URL;
+            }, 1500); // 1.5 secondi per mostrare l'animazione di redirect
+        });
+    </script>
+</head>
+<body>
+    <div class="redirect-container">
+        <div class="spinner">
+            <div class="spinner-ring"></div>
+        </div>
+        <h2>Area Riservata</h2>
+        <p>Ti stiamo reindirizzando alla dashboard di Pages CMS per gestire il tuo portfolio...</p>
+        <a href="https://app.pagescms.org/dashboard/github/nomeasy-art/webportfolio" class="btn-manual">Clicca qui se il caricamento non avviene</a>
+    </div>
+</body>
+</html>

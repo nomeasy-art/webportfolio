@@ -69,14 +69,76 @@ function setupSmoothScroll(element, speed = 0.6, lerp = 0.08) {
     return instance;
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    // --- FETCH PROJECTS FROM LOCAL JSON ---
-    try {
-        const response = await fetch('projects.json');
-        if (!response.ok) {
-            throw new Error(`Failed to load projects: ${response.statusText}`);
+// --- UTILITY: GET ALL JSON PROJECT FILES DYNAMICALLY ---
+async function getProjectFiles() {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    // 1. Try local directory listing if running locally
+    if (isLocal) {
+        try {
+            const res = await fetch('projects/');
+            if (res.ok) {
+                const text = await res.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = Array.from(doc.querySelectorAll('a'))
+                    .map(a => a.getAttribute('href'))
+                    .filter(href => href && href.endsWith('.json') && !href.endsWith('projects.json'));
+                if (links.length > 0) {
+                    return links.map(link => link.startsWith('projects/') ? link : `projects/${link}`);
+                }
+            }
+        } catch (e) {
+            console.warn("Failed to read local directory listing, trying fallbacks...", e);
         }
-        const projects = await response.json();
+    }
+
+    // 2. Try GitHub Contents API if hosted on GitHub Pages
+    if (window.location.hostname.endsWith('github.io')) {
+        try {
+            const parts = window.location.pathname.split('/').filter(Boolean);
+            const user = window.location.hostname.split('.')[0];
+            const repo = parts[0];
+            if (user && repo) {
+                const apiRes = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/projects`);
+                if (apiRes.ok) {
+                    const files = await apiRes.json();
+                    return files
+                        .filter(f => f.name.endsWith('.json'))
+                        .map(f => f.path);
+                }
+            }
+        } catch (e) {
+            console.warn("Failed to fetch from GitHub API:", e);
+        }
+    }
+
+    // 3. Fallback: Static list of projects (useful for custom domains or Netlify/Vercel)
+    return [
+        "projects/san-saba.json",
+        "projects/youth-screen-use-survey.json",
+        "projects/golopa.json",
+        "projects/chiara-gratteri.json",
+        "projects/macelleria-sans.json",
+        "projects/borderline.json",
+        "projects/business-model-canvas.json",
+        "projects/terre-di-epicuro.json"
+    ];
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // --- FETCH PROJECTS FROM INDIVIDUAL JSON FILES ---
+    try {
+        const projectPaths = await getProjectFiles();
+        const projects = await Promise.all(
+            projectPaths.map(async (path) => {
+                const fileRes = await fetch(path);
+                if (!fileRes.ok) {
+                    throw new Error(`Failed to load project at path: ${path}`);
+                }
+                return await fileRes.json();
+            })
+        );
 
         // Sort projects by order (smaller numbers first, nulls/undefined at the end)
         projects.sort((a, b) => {
@@ -108,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (err) {
         console.error("Error fetching local projects:", err);
     }
-    // --------------------------------------
+    // -------------------------------------------------
 
     // --- CUSTOM CURSOR LOGIC ---
     const cursor = document.createElement('div');

@@ -5,10 +5,10 @@ media:
 content:
   - name: projects
     label: Progetti
-    type: file
-    path: projects.json
+    type: collection
+    path: projects
     format: json
-    list: true
+    filename: "{fields.slug}.json"
     fields:
       - name: title
         label: Titolo
@@ -32,14 +32,15 @@ content:
         type: select
         required: true
         options:
-          - label: Editorial
-            value: editorial
-          - label: Packaging
-            value: packaging
-          - label: Book Cover
-            value: book-cover
-          - label: Brand Identity
-            value: user-interface
+          values:
+            - name: editorial
+              label: Editorial
+            - name: packaging
+              label: Packaging
+            - name: book-cover
+              label: Book Cover
+            - name: user-interface
+              label: Brand Identity
       - name: tags
         label: Tag
         type: string
