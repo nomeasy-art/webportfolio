@@ -93,24 +93,26 @@ async function getProjectFiles() {
         }
     }
 
-    // 2. Try GitHub Contents API if hosted on GitHub Pages
-    if (window.location.hostname.endsWith('github.io')) {
-        try {
-            const parts = window.location.pathname.split('/').filter(Boolean);
-            const user = window.location.hostname.split('.')[0];
-            const repo = parts[0];
-            if (user && repo) {
-                const apiRes = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/projects`);
-                if (apiRes.ok) {
-                    const files = await apiRes.json();
-                    return files
-                        .filter(f => f.name.endsWith('.json'))
-                        .map(f => f.path);
-                }
+    // 2. Try GitHub Contents API (works on any hosting, including Vercel + custom domain).
+    // This is what lets newly-added projects from the CMS show up automatically,
+    // without needing to edit this file every time.
+    try {
+        const user = 'nomeasy-art';
+        const repo = 'webportfolio';
+        const apiRes = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/projects`);
+        if (apiRes.ok) {
+            const files = await apiRes.json();
+            if (Array.isArray(files)) {
+                const jsonFiles = files
+                    .filter(f => f.name.endsWith('.json'))
+                    .map(f => f.path);
+                if (jsonFiles.length > 0) return jsonFiles;
             }
-        } catch (e) {
-            console.warn("Failed to fetch from GitHub API:", e);
+        } else {
+            console.warn("GitHub API request failed with status:", apiRes.status);
         }
+    } catch (e) {
+        console.warn("Failed to fetch from GitHub API:", e);
     }
 
     // 3. Fallback: Static list of projects (useful for custom domains or Netlify/Vercel)
