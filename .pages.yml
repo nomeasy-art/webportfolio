@@ -1,20 +1,23 @@
 media:
-  path: "images/projects"
-  public_path: "images/projects"
+  path: images/projects
+  public_path: images/projects
 
 content:
   - name: projects
     label: Progetti
     type: file
-    path: "projects.json"
+    path: projects.json
+    format: json
     list: true
     fields:
       - name: title
         label: Titolo
         type: string
+        required: true
       - name: slug
         label: Slug
         type: string
+        required: true
       - name: collaborator
         label: Collaboratore
         type: string
@@ -27,6 +30,7 @@ content:
       - name: category
         label: Categoria
         type: select
+        required: true
         options:
           - label: Editorial
             value: editorial
@@ -38,17 +42,15 @@ content:
             value: user-interface
       - name: tags
         label: Tag
-        type: array
-        field:
-          type: string
+        type: string
+        list: true
       - name: mainImageUrl
         label: Immagine Principale
         type: image
       - name: gallery
         label: Galleria Immagini
-        type: array
-        field:
-          type: image
+        type: image
+        list: true
       - name: externalLink
         label: Link Esterno
         type: string
@@ -56,5 +58,5 @@ content:
         label: In Evidenza
         type: boolean
       - name: order
-        label: Ordine (numero)
+        label: Ordine
         type: number
