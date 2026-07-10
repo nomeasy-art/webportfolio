@@ -1,11 +1,4 @@
-import { createClient } from 'https://esm.sh/@sanity/client';
-
-const client = createClient({
-    projectId: 'j1hydh9x',
-    dataset: 'production',
-    useCdn: true,
-    apiVersion: '2023-05-03',
-});
+// Projects are loaded locally from projects.json
 
 // --- UTILITY: PREMIUM SMOOTH SCROLL (INERTIAL LERP) ---
 function setupSmoothScroll(element, speed = 0.6, lerp = 0.08) {
@@ -77,14 +70,20 @@ function setupSmoothScroll(element, speed = 0.6, lerp = 0.08) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- FETCH PROJECTS FROM SANITY ---
+    // --- FETCH PROJECTS FROM LOCAL JSON ---
     try {
-        const projects = await client.fetch(`*[_type == "project"] | order(order asc) {
-            title, slug, collaborator, year, description, category, tags,
-            "mainImageUrl": mainImage.asset->url,
-            "gallery": galleryImages[].asset->url,
-            externalLink, featured
-        }`);
+        const response = await fetch('projects.json');
+        if (!response.ok) {
+            throw new Error(`Failed to load projects: ${response.statusText}`);
+        }
+        const projects = await response.json();
+
+        // Sort projects by order (smaller numbers first, nulls/undefined at the end)
+        projects.sort((a, b) => {
+            const orderA = a.order !== null && a.order !== undefined ? a.order : 9999;
+            const orderB = b.order !== null && b.order !== undefined ? b.order : 9999;
+            return orderA - orderB;
+        });
 
         projects.forEach(project => {
             const category = project.category || 'editorial';
@@ -102,14 +101,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="info-row top-border">${project.title || 'NOME DEL PROGETTO'}</div>
                 <div class="info-row">${project.collaborator || ''}</div>
                 <div class="info-row">${project.year || ''}</div>
-                <div class="project-image-placeholder" ${project.mainImageUrl ? `style="background-image: url('${project.mainImageUrl}?w=600'); background-size: cover; background-position: center;"` : ''}></div>
+                <div class="project-image-placeholder" ${project.mainImageUrl ? `style="background-image: url('${project.mainImageUrl}'); background-size: cover; background-position: center;"` : ''}></div>
             `;
             wrapper.appendChild(projectEl);
         });
     } catch (err) {
-        console.error("Error fetching Sanity projects:", err);
+        console.error("Error fetching local projects:", err);
     }
-    // ----------------------------------
+    // --------------------------------------
 
     // --- CUSTOM CURSOR LOGIC ---
     const cursor = document.createElement('div');
@@ -433,7 +432,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     galleryUrls.forEach(url => {
                         const imgDiv = document.createElement('div');
                         imgDiv.className = 'large-image';
-                        imgDiv.style.backgroundImage = `url('${url}?w=1200')`;
+                        imgDiv.style.backgroundImage = `url('${url}')`;
                         imgDiv.style.backgroundSize = 'cover';
                         imgDiv.style.backgroundPosition = 'center';
                         detailScroll.appendChild(imgDiv);

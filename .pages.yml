@@ -1,0 +1,60 @@
+media:
+  path: "images/projects"
+  public_path: "images/projects"
+
+content:
+  - name: projects
+    label: Progetti
+    type: file
+    path: "projects.json"
+    list: true
+    fields:
+      - name: title
+        label: Titolo
+        type: string
+      - name: slug
+        label: Slug
+        type: string
+      - name: collaborator
+        label: Collaboratore
+        type: string
+      - name: year
+        label: Anno
+        type: string
+      - name: description
+        label: Descrizione
+        type: text
+      - name: category
+        label: Categoria
+        type: select
+        options:
+          - label: Editorial
+            value: editorial
+          - label: Packaging
+            value: packaging
+          - label: Book Cover
+            value: book-cover
+          - label: Brand Identity
+            value: user-interface
+      - name: tags
+        label: Tag
+        type: array
+        field:
+          type: string
+      - name: mainImageUrl
+        label: Immagine Principale
+        type: image
+      - name: gallery
+        label: Galleria Immagini
+        type: array
+        field:
+          type: image
+      - name: externalLink
+        label: Link Esterno
+        type: string
+      - name: featured
+        label: In Evidenza
+        type: boolean
+      - name: order
+        label: Ordine (numero)
+        type: number
