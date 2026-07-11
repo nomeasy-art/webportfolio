@@ -69,6 +69,66 @@ function setupSmoothScroll(element, speed = 0.6, lerp = 0.08) {
     return instance;
 }
 
+// --- UTILITY: GALLERY LAYOUT (orizzontali/verticali a pattern + reveal animato) ---
+function createGalleryImage(url, extraClass) {
+    const div = document.createElement('div');
+    div.className = extraClass ? `large-image ${extraClass}` : 'large-image';
+    if (url) {
+        div.style.backgroundImage = `url('${url}')`;
+        div.style.backgroundSize = 'cover';
+        div.style.backgroundPosition = 'center';
+    }
+    return div;
+}
+
+// Pattern (ciclo di 4, 0-indexed): 0,1 = orizzontale — 2,3 = verticale (affiancate).
+// Si adatta automaticamente al numero di immagini realmente disponibili, senza
+// lasciare mai riquadri vuoti se un progetto ne ha meno di 10.
+function buildGallery(urls, container) {
+    let i = 0;
+    while (i < urls.length) {
+        const mod = i % 4;
+        if (mod === 2 && i + 1 < urls.length) {
+            const pair = document.createElement('div');
+            pair.className = 'image-row-pair';
+            pair.appendChild(createGalleryImage(urls[i], 'vertical'));
+            pair.appendChild(createGalleryImage(urls[i + 1], 'vertical'));
+            container.appendChild(pair);
+            i += 2;
+        } else if (mod === 2 || mod === 3) {
+            // Verticale orfana (senza compagna disponibile): resa singola, centrata.
+            container.appendChild(createGalleryImage(urls[i], 'vertical solo'));
+            i += 1;
+        } else {
+            container.appendChild(createGalleryImage(urls[i], 'horizontal'));
+            i += 1;
+        }
+    }
+}
+
+// Rivela ogni immagine con uno zoom-in smooth dal centro quando entra in vista durante lo scroll.
+function setupGalleryReveal(container) {
+    const items = container.querySelectorAll('.large-image');
+    if (!('IntersectionObserver' in window)) {
+        items.forEach(el => el.classList.add('in-view'));
+        return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        root: container,
+        threshold: 0.15,
+        rootMargin: '0px 0px -5% 0px'
+    });
+    items.forEach(el => observer.observe(el));
+}
+// ---------------------------------------------------------------------------
+
 // --- UTILITY: GET ALL JSON PROJECT FILES DYNAMICALLY ---
 async function getProjectFiles() {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -506,20 +566,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 detailScroll.innerHTML = ''; // Svuota la galleria precedente
                 try {
                     const galleryUrls = JSON.parse(project.dataset.gallery || '[]');
-                    galleryUrls.forEach(url => {
-                        const imgDiv = document.createElement('div');
-                        imgDiv.className = 'large-image';
-                        imgDiv.style.backgroundImage = `url('${url}')`;
-                        imgDiv.style.backgroundSize = 'cover';
-                        imgDiv.style.backgroundPosition = 'center';
-                        detailScroll.appendChild(imgDiv);
-                    });
-                    if (galleryUrls.length === 0) {
-                        // fallback if no gallery
-                        const imgDiv = document.createElement('div');
-                        imgDiv.className = 'large-image';
-                        detailScroll.appendChild(imgDiv);
-                    }
+                    buildGallery(galleryUrls, detailScroll);
+                    setupGalleryReveal(detailScroll);
                 } catch (e) {
                     console.error("Error parsing gallery images", e);
                 }
