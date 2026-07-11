@@ -2,16 +2,13 @@
   "title": "Borderline Magazine",
   "slug": "borderline",
   "collaborator": "ROME UNIVERSITY OF FINE ARTS",
-  "year": "W/ Francesco D'Acunto, Marco Izzo",
+  "year": "W/Francesco D'Acunto, Marco Izzo",
   "description": "Borderline is an editorial project investigating El Salvador’s CECOT maximum-security prison, blending journalistic research with visual experimentation. A dynamic modular layout balances informative rigour and visual impact, turning reading into an immersive experience that strengthens the project’s narrative voice.\n\nBorderline è un progetto editoriale che indaga il carcere di massima sicurezza CECOT, in El Salvador, intrecciando ricerca giornalistica e sperimentazione visiva. Un layout modulare dinamico alterna rigore informativo e impatto visivo, trasformando la lettura in un’esperienza immersiva.",
   "category": "editorial",
-  "tags": [],
   "mainImageUrl": "images/projects/borderline/c1992f0588bcad5d4c52825c132268eb1f8f7011-1153x1416.png",
   "gallery": [
     "images/projects/borderline/60942541e98cf34f0e0ace25061b3e02f0972032-1448x1086.png",
     "images/projects/borderline/bbe381f7ef4888aab59d18b86010ac5f62bec45e-1448x1086.png"
   ],
-  "externalLink": "",
-  "featured": false,
-  "order": null
+  "featured": false
 }
