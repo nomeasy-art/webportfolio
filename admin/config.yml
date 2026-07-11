@@ -1,0 +1,81 @@
+backend:
+  name: github
+  repo: nomeasy-art/webportfolio
+  branch: main
+
+# I media vivono nel repository, negli stessi percorsi già usati dai progetti.
+media_folder: images/projects
+public_folder: images/projects
+
+collections:
+  - name: projects
+    label: Progetti
+    folder: projects
+    format: json
+    extension: json
+    create: true
+    slug: "{{fields.slug}}"
+    identifier_field: title
+    summary: "{{title}}"
+    sortable_fields: [order, title, year]
+    fields:
+      - name: title
+        label: Titolo
+        widget: string
+      - name: slug
+        label: Slug
+        widget: string
+        hint: "Nome del file del progetto (es. terre-di-epicuro). Non cambiarlo dopo la creazione."
+      - name: collaborator
+        label: Collaboratore
+        widget: string
+        required: false
+      - name: year
+        label: Collaboratori
+        widget: string
+        required: false
+      - name: description
+        label: Descrizione
+        widget: text
+        required: false
+      - name: category
+        label: Categoria
+        widget: select
+        options:
+          - value: editorial
+            label: Editorial
+          - value: packaging
+            label: Packaging
+          - value: book-cover
+            label: Book Cover
+          - value: user-interface
+            label: Brand Identity
+      - name: tags
+        label: Tag
+        widget: list
+        required: false
+      - name: mainImageUrl
+        label: Immagine o Video Principale
+        widget: file
+        required: false
+      - name: gallery
+        label: Galleria (Immagini e Video)
+        widget: list
+        required: false
+        field:
+          name: item
+          label: Media
+          widget: file
+      - name: externalLink
+        label: Link Esterno
+        widget: string
+        required: false
+      - name: featured
+        label: In Evidenza
+        widget: boolean
+        required: false
+      - name: order
+        label: Ordine
+        widget: number
+        required: false
+        value_type: int
