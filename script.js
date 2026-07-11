@@ -378,7 +378,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         let isAnimating = false;
 
         // Parametri per una fluidità eccellente
-        const scrollSpeed = 0.8;
+        // Velocità ridotta: senza più il blocco ai bordi tutto l'input arriva
+        // a destinazione, quindi serve un moltiplicatore più basso di prima.
+        const scrollSpeed = 0.4;
         const lerpFactor = 0.08;
 
         if (!isHorizontal) {

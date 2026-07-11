@@ -601,16 +601,15 @@ body.detail-closing .close-detail {
     width: 100%;
     aspect-ratio: 1.6;
     background-color: var(--placeholder-bg);
-    will-change: transform, opacity;
-    transform-origin: center center;
-    opacity: 0;
-    transform: scale(0.62) translateZ(0);
-    transition: opacity 1.6s cubic-bezier(0.16, 1, 0.3, 1), transform 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Effetto maschera: l'immagine resta ferma alla sua dimensione definitiva,
+       è la finestra che la ritaglia ad aprirsi dal centro verso i bordi. */
+    will-change: clip-path;
+    clip-path: inset(42% 42% 42% 42%);
+    transition: clip-path 1.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .large-image.in-view {
-    opacity: 1;
-    transform: scale(1) translateZ(0);
+    clip-path: inset(0 0 0 0);
 }
 
 .large-image.vertical {
@@ -726,6 +725,7 @@ body.detail-active .active-column .scroll-wrapper {
     .detail-scroll .large-image.in-view {
         opacity: 1;
         transform: none;
+        clip-path: none;
         transition: none;
     }
 }
