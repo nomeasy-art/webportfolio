@@ -39,7 +39,7 @@ content:
               label: Packaging
             - name: book-cover
               label: Book Cover
-            - name: brand-identity
+            - name: user-interface
               label: Brand Identity
       - name: tags
         label: Tag
