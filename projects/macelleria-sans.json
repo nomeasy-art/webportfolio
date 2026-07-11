@@ -1,11 +1,10 @@
 {
-  "title": "Macelleria Sans",
+  "title": "Macelleria - Type Design",
   "slug": "macelleria-sans",
   "collaborator": "2026",
   "year": "(no collaborators)",
   "description": "Macelleria Sans is a type design project born from the sign of a historic Italian butcher shop. Its geometric modules were reconstructed and systematised into a complete alphabet: a bold vintage display typeface reinterpreting vernacular lettering in a contemporary key.\n\nMacelleria Sans è un progetto di type design nato dall’insegna di una storica macelleria italiana. I suoi moduli geometrici sono stati ricostruiti e sistematizzati in un alfabeto completo: una display typeface vintage che reinterpreta il lettering vernacolare in chiave contemporanea.",
-  "category": "user-interface",
-  "tags": [],
+  "category": "Brand Identity",
   "mainImageUrl": "images/projects/macelleria-sans/b228f998430e131de5c3db9bef12a5f412a6afac-398x486.png",
   "gallery": [
     "images/projects/macelleria-sans/834b1997d96b1183ff442dd2f82654ca0db31dd1-1438x983.png",
@@ -16,7 +15,5 @@
     "images/projects/macelleria-sans/13fa5b1296a8908b0289de299c2316c58534defe-1438x983.png",
     "images/projects/macelleria-sans/10394650067fef916600b4c9c2add9a87811eaa9-1438x983.png"
   ],
-  "externalLink": "",
-  "featured": false,
-  "order": null
+  "featured": false
 }
