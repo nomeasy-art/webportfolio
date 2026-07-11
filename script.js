@@ -128,6 +128,26 @@ async function getProjectFiles() {
     ];
 }
 
+// --- THEME TOGGLE (DARK / LIGHT) ---
+(function () {
+    const root = document.documentElement;
+    const toggles = document.querySelectorAll('.theme-toggle-input');
+
+    const applyTheme = (isLight) => {
+        root.classList.toggle('light-mode', isLight);
+        toggles.forEach(t => { t.checked = isLight; });
+        try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) { }
+    };
+
+    // Sync checkbox state with the (possibly already-applied) theme on load
+    applyTheme(root.classList.contains('light-mode'));
+
+    toggles.forEach(toggle => {
+        toggle.addEventListener('change', () => applyTheme(toggle.checked));
+    });
+})();
+// ------------------------------------
+
 document.addEventListener('DOMContentLoaded', async () => {
     // --- FETCH PROJECTS FROM INDIVIDUAL JSON FILES ---
     try {
@@ -191,13 +211,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Detect hover on clickable elements
     document.addEventListener('mouseover', (e) => {
-        if (e.target.closest('a, button, .project-image-placeholder, .close-detail')) {
+        if (e.target.closest('a, button, .project-image-placeholder, .close-detail, .theme-toggle')) {
             cursor.classList.add('is-clickable');
         }
     });
 
     document.addEventListener('mouseout', (e) => {
-        if (e.target.closest('a, button, .project-image-placeholder, .close-detail')) {
+        if (e.target.closest('a, button, .project-image-placeholder, .close-detail, .theme-toggle')) {
             cursor.classList.remove('is-clickable');
         }
     });

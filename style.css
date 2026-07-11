@@ -1,6 +1,17 @@
 :root {
+    /* Dark mode (default) */
+    --bg-color: #141311;
+    --text-color: #F2EEE1;
+    --text-muted-color: #948F7F;
+    --border-color: #2B2A25;
+    --placeholder-bg: #211F1A;
+}
+
+html.light-mode {
+    /* Light mode (avorio, non bianco puro) */
     --bg-color: #FFFBEC;
     --text-color: #1A1A1A;
+    --text-muted-color: #4A4A4A;
     --border-color: #E2DEC9;
     --placeholder-bg: #EAE7D9;
 }
@@ -18,7 +29,7 @@ html {
 }
 
 body {
-    background-color: #FFFBEC;
+    background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Chivo Mono', monospace;
     font-weight: 300;
@@ -30,13 +41,15 @@ body {
     -moz-osx-font-smoothing: grayscale;
     cursor: none !important;
     /* Nasconde il cursore di sistema */
+    transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 /* Nasconde il cursore anche sugli elementi interattivi */
 a,
 button,
 .project-image-placeholder,
-.close-detail {
+.close-detail,
+.theme-toggle {
     cursor: none !important;
 }
 
@@ -54,8 +67,13 @@ button,
     position: absolute;
     top: 0;
     left: 0;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
     transform-origin: center center;
+    filter: invert(1);
+}
+
+html.light-mode .cursor-img {
+    filter: none;
 }
 
 /* Stato base */
@@ -164,7 +182,8 @@ h2 {
     font-size: 21px;
     font-weight: 600;
     letter-spacing: -0.02em;
-    color: #1A1A1A;
+    color: var(--text-color);
+    transition: color 0.4s ease;
 }
 
 .sidebar-footer {
@@ -231,7 +250,8 @@ h2 {
     padding: 0.4rem 0;
     border-bottom: 1px solid var(--border-color);
     letter-spacing: -0.4px;
-    color: #4A4A4A;
+    color: var(--text-muted-color);
+    transition: color 0.4s ease, border-color 0.4s ease;
 }
 
 .sidebar {
@@ -253,6 +273,58 @@ h2 {
 .social-icon {
     height: 16px;
     width: auto;
+    filter: invert(1);
+    transition: filter 0.4s ease;
+}
+
+html.light-mode .social-icon {
+    filter: none;
+}
+
+/* Theme Toggle (iOS-style switch) */
+.theme-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.theme-toggle-input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.theme-toggle-track {
+    display: inline-block;
+    width: 32px;
+    height: 19px;
+    border-radius: 999px;
+    background-color: var(--border-color);
+    position: relative;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.theme-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: var(--text-color);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+}
+
+.theme-toggle-input:checked+.theme-toggle-track {
+    background-color: var(--text-color);
+}
+
+.theme-toggle-input:checked+.theme-toggle-track .theme-toggle-thumb {
+    transform: translateX(13px);
+    background-color: var(--bg-color);
 }
 
 .project {
@@ -320,7 +392,8 @@ h2 {
     a,
     button,
     .project-image-placeholder,
-    .close-detail {
+    .close-detail,
+    .theme-toggle {
         cursor: auto !important;
     }
 
