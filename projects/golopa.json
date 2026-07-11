@@ -1,11 +1,10 @@
 {
-  "title": "Golopà — BRAND IDENTITY (2026)",
+  "title": "Golopà — Baby Food",
   "slug": "golopa",
   "collaborator": "ROME UNIVERSITY OF FINE ARTS",
   "year": "(no collaborators)",
   "description": "Golopà is a branding and packaging design project for a line of organic baby food. Warm colours, light illustrations and a clear visual hierarchy convey trust, naturalness and simplicity, creating a recognisable, accessible identity with strong shelf impact.\n\nGolopà è un progetto di branding e packaging per una linea di alimenti biologici per la prima infanzia. Palette calda, illustrazioni leggere e gerarchia visiva chiara trasmettono fiducia, naturalezza e semplicità, creando un’identità riconoscibile e di forte impatto a scaffale.",
   "category": "packaging",
-  "tags": [],
   "mainImageUrl": "images/projects/golopa/6fbebd003becff9ee796b0a9d4bfd153054641ff-915x1148.png",
   "gallery": [
     "images/projects/golopa/778794a02765648c7034d9832f9af84dd6790877-1300x812.png",
@@ -14,7 +13,5 @@
     "images/projects/golopa/ea50b7c811d19ca39e2e1e23f819a5ac53974dc5-1808x1130.png",
     "images/projects/golopa/5ee2418d48947e501ae48c959d839f691a650b36-1808x1130.png"
   ],
-  "externalLink": "",
-  "featured": false,
-  "order": null
+  "featured": false
 }
