@@ -1,6 +1,7 @@
 media:
   input: images/projects
   output: images/projects
+  extensions: [jpg, jpeg, png, webp, gif, svg, mp4, webm]
 
 content:
   - name: projects
@@ -46,14 +47,17 @@ content:
         type: string
         list: true
       - name: mainImageUrl
-        label: Immagine Principale
+        label: Immagine o Video Principale
         type: image
+        options:
+          extensions: [jpg, jpeg, png, webp, gif, mp4, webm]
       - name: gallery
-        label: Galleria Immagini
+        label: Galleria (Immagini e Video)
         type: image
         options:
           multiple:
             max: 20
+          extensions: [jpg, jpeg, png, webp, gif, mp4, webm]
       - name: externalLink
         label: Link Esterno
         type: string

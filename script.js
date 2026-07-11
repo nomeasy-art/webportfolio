@@ -69,15 +69,42 @@ function setupSmoothScroll(element, speed = 0.6, lerp = 0.08) {
     return instance;
 }
 
+// --- UTILITY: MEDIA (immagini e video) ---
+function isVideoUrl(url) {
+    return /\.(mp4|webm)(\?.*)?$/i.test(url || '');
+}
+
+// Riempie un riquadro con il media giusto: video autoavviante in loop
+// (silenziato, come una GIF) oppure immagine di sfondo come sempre.
+// Gli attributi (oltre alle proprietà) servono perché i cloni via cloneNode
+// conservino muted/autoplay e ripartano da soli una volta inseriti nel DOM.
+function fillMediaBox(box, url) {
+    if (!url) return;
+    if (isVideoUrl(url)) {
+        const video = document.createElement('video');
+        video.src = url;
+        video.muted = true;
+        video.autoplay = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.setAttribute('muted', '');
+        video.setAttribute('autoplay', '');
+        video.setAttribute('loop', '');
+        video.setAttribute('playsinline', '');
+        video.setAttribute('preload', 'auto');
+        box.appendChild(video);
+    } else {
+        box.style.backgroundImage = `url('${url}')`;
+        box.style.backgroundSize = 'cover';
+        box.style.backgroundPosition = 'center';
+    }
+}
+
 // --- UTILITY: GALLERY LAYOUT (orizzontali/verticali a pattern + reveal animato) ---
 function createGalleryImage(url, extraClass) {
     const div = document.createElement('div');
     div.className = extraClass ? `large-image ${extraClass}` : 'large-image';
-    if (url) {
-        div.style.backgroundImage = `url('${url}')`;
-        div.style.backgroundSize = 'cover';
-        div.style.backgroundPosition = 'center';
-    }
+    fillMediaBox(div, url);
     return div;
 }
 
@@ -233,8 +260,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="info-row top-border">${project.title || 'NOME DEL PROGETTO'}</div>
                 <div class="info-row">${project.collaborator || ''}</div>
                 <div class="info-row">${project.year || ''}</div>
-                <div class="project-image-placeholder" ${project.mainImageUrl ? `style="background-image: url('${project.mainImageUrl}'); background-size: cover; background-position: center;"` : ''}></div>
+                <div class="project-image-placeholder"></div>
             `;
+            fillMediaBox(projectEl.querySelector('.project-image-placeholder'), project.mainImageUrl);
             wrapper.appendChild(projectEl);
         });
     } catch (err) {
