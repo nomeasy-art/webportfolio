@@ -602,13 +602,15 @@ body.detail-closing .close-detail {
     aspect-ratio: 1.6;
     background-color: var(--placeholder-bg);
     /* Effetto maschera: l'immagine resta ferma alla sua dimensione definitiva,
-       è la finestra che la ritaglia ad aprirsi dal centro verso i bordi. */
-    will-change: clip-path;
+       è la finestra che la ritaglia ad aprirsi dal centro verso i bordi.
+       Niente will-change qui: su WebKit può bloccare il ridisegno del ritaglio. */
+    -webkit-clip-path: inset(42% 42% 42% 42%);
     clip-path: inset(42% 42% 42% 42%);
-    transition: clip-path 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: -webkit-clip-path 1.6s cubic-bezier(0.16, 1, 0.3, 1), clip-path 1.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .large-image.in-view {
+    -webkit-clip-path: inset(0 0 0 0);
     clip-path: inset(0 0 0 0);
 }
 
@@ -725,6 +727,7 @@ body.detail-active .active-column .scroll-wrapper {
     .detail-scroll .large-image.in-view {
         opacity: 1;
         transform: none;
+        -webkit-clip-path: none;
         clip-path: none;
         transition: none;
     }

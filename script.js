@@ -106,26 +106,34 @@ function buildGallery(urls, container) {
     }
 }
 
-// Rivela ogni immagine con uno zoom-in smooth dal centro quando entra in vista durante lo scroll.
+// Rivela ogni immagine (apertura della maschera) quando entra in vista durante lo scroll.
+// Trigger basato direttamente sulla posizione di scroll: più affidabile di
+// IntersectionObserver, che su alcuni browser non scatta con root scrollabili custom.
 function setupGalleryReveal(container) {
-    const items = container.querySelectorAll('.large-image');
-    if (!('IntersectionObserver' in window)) {
-        items.forEach(el => el.classList.add('in-view'));
-        return;
-    }
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('in-view');
-                observer.unobserve(entry.target);
+    const items = Array.from(container.querySelectorAll('.large-image'));
+
+    const check = () => {
+        const bounds = container.getBoundingClientRect();
+        const limit = bounds.top + bounds.height * 0.95;
+        items.forEach(el => {
+            if (el.classList.contains('in-view')) return;
+            if (el.getBoundingClientRect().top < limit) {
+                el.classList.add('in-view');
             }
         });
-    }, {
-        root: container,
-        threshold: 0.15,
-        rootMargin: '0px 0px -5% 0px'
-    });
-    items.forEach(el => observer.observe(el));
+    };
+
+    // Evita di accumulare listener a ogni apertura di progetto
+    if (container._revealCheck) {
+        container.removeEventListener('scroll', container._revealCheck);
+    }
+    container._revealCheck = check;
+    container.addEventListener('scroll', check, { passive: true });
+
+    // Primo controllo dopo che il frame iniziale (maschera chiusa) è stato dipinto,
+    // così la transizione parte sempre; il setTimeout fa da rete di sicurezza.
+    requestAnimationFrame(() => requestAnimationFrame(check));
+    setTimeout(check, 300);
 }
 // ---------------------------------------------------------------------------
 
