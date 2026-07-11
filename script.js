@@ -491,10 +491,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sidebarEl = document.querySelector('.sidebar');
     const closeBtns = document.querySelectorAll('.close-detail, .close-detail-mobile');
 
+    // Id del timeout di fine chiusura: va annullato se l'utente riapre un
+    // progetto mentre l'animazione di chiusura è ancora in corso, altrimenti
+    // allo scadere spegnerebbe la vista appena aperta (schermata vuota).
+    let closeTimeoutId = null;
+
     placeholders.forEach(placeholder => {
         placeholder.addEventListener('click', () => {
             const col = placeholder.closest('.category-column');
             if (!col) return;
+
+            // Se c'è una chiusura in corso, annullala e riparti da uno stato pulito
+            if (closeTimeoutId) {
+                clearTimeout(closeTimeoutId);
+                closeTimeoutId = null;
+            }
+            if (document.body.classList.contains('detail-closing')) {
+                document.body.classList.remove('detail-closing');
+                // Riavvia da zero l'animazione d'ingresso della galleria,
+                // interrotta a metà dall'animazione di uscita
+                const detailView = document.querySelector('.project-detail-view');
+                if (detailView) {
+                    detailView.style.animation = 'none';
+                    void detailView.offsetWidth; // forza il reflow per resettare l'animazione
+                    detailView.style.animation = '';
+                }
+            }
 
             // Calcola di quante posizioni deve spostarsi a sinistra
             const colIndex = allColumnsIncludingSidebar.indexOf(col);
@@ -564,6 +586,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const detailScroll = document.querySelector('.detail-scroll');
             if (detailScroll) {
                 detailScroll.innerHTML = ''; // Svuota la galleria precedente
+                // Riparti sempre dall'inizio della galleria (il reset a fine
+                // chiusura potrebbe essere stato annullato da una riapertura rapida)
+                detailScroll.scrollTop = 0;
+                detailScroll.scrollLeft = 0;
+                if (detailScroll.smoothScrollInstance) {
+                    detailScroll.smoothScrollInstance.reset();
+                }
                 try {
                     const galleryUrls = JSON.parse(project.dataset.gallery || '[]');
                     buildGallery(galleryUrls, detailScroll);
@@ -626,8 +655,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     window.scrollTo(0, targetScroll);
                 }
 
-                // Aspetta che l'animazione di uscita (0.8s) sia completata
-                setTimeout(() => {
+                // Aspetta che l'animazione di uscita (0.8s) sia completata.
+                // Salviamo l'id per poterla annullare se l'utente riapre
+                // un progetto prima che la chiusura sia terminata.
+                if (closeTimeoutId) clearTimeout(closeTimeoutId);
+                closeTimeoutId = setTimeout(() => {
+                    closeTimeoutId = null;
                     document.body.classList.remove('detail-active');
                     document.body.classList.remove('detail-closing');
 
