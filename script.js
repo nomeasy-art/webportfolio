@@ -422,6 +422,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const placeholders = document.querySelectorAll('.project-image-placeholder');
     const allCols = document.querySelectorAll('.category-column');
     const allColumnsIncludingSidebar = Array.from(document.querySelectorAll('.column'));
+    const sidebarEl = document.querySelector('.sidebar');
     const closeBtns = document.querySelectorAll('.close-detail, .close-detail-mobile');
 
     placeholders.forEach(placeholder => {
@@ -431,21 +432,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Calcola di quante posizioni deve spostarsi a sinistra
             const colIndex = allColumnsIncludingSidebar.indexOf(col);
-            // La sidebar è index 0. La colonna 2 è index 1 (spostamento = 0 slot).
-            const slotsToMove = colIndex - 1;
+            // La sidebar (index 0) sparisce, quindi la colonna selezionata deve
+            // spostarsi fino a occupare il suo slot: spostamento = colIndex slot.
+            const slotsToMove = colIndex;
 
-            // Applica l'animazione di spostamento verso sinistra. 
+            // Applica l'animazione di spostamento verso sinistra.
             // Visto che la colonna ha margin-left: -1.25rem, la sua larghezza (100%) è track + 1.25rem.
             // Per spostarsi di track + gap (2.5rem), dobbiamo sommare 1.25rem al 100% (non 2.5rem).
             col.style.transform = `translateX(calc(-${slotsToMove * 100}% - ${slotsToMove * 1.25}rem))`;
             col.classList.add('active-column');
 
-            // Fai crollare verso il basso le altre colonne (tranne la sidebar che non è in allCols)
+            // Fai crollare verso il basso le altre colonne category
             allCols.forEach(c => {
                 if (c !== col) {
                     c.classList.add('hidden-column');
                 }
             });
+
+            // Fai crollare verso il basso anche la sidebar (Design Gallery)
+            if (sidebarEl) {
+                sidebarEl.classList.add('hidden-column');
+            }
 
             // Mostra la visualizzazione dettaglio coi riquadri grandi
             document.body.classList.add('detail-active');
@@ -551,6 +558,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                         setTimeout(() => oldInfo.remove(), 300);
                     }
                 });
+
+                // Ripristina la sidebar (Design Gallery)
+                if (sidebarEl) {
+                    sidebarEl.classList.remove('hidden-column');
+                }
 
                 // Ripristina lo scroll su mobile allineando la colonna sincronicamente per evitare flash visivi
                 if (window.innerWidth <= 768 && activeCol) {
