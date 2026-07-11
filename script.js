@@ -387,8 +387,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 e.preventDefault();
 
                 targetScroll += e.deltaY * scrollSpeed;
-                const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
-                targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+
+                // Con il loop infinito attivo il target non va mai bloccato ai bordi
+                // del contenitore: è il wrap in updateScroll a riportarlo nella fascia
+                // centrale. Bloccarlo qui fa "sbattere" lo scroll contro il fondo e
+                // perde le rotellate successive (lo scatto periodico su desktop).
+                if (setSize <= 0) {
+                    const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
+                    targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+                }
 
                 if (!isAnimating) {
                     isAnimating = true;
@@ -400,12 +407,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         function updateScroll() {
             currentScroll += (targetScroll - currentScroll) * lerpFactor;
 
-            // Loop infinito in perfetta sincronia con i frame di animazione
+            // Loop infinito in perfetta sincronia con i frame di animazione.
+            // Il "while" (invece di un singolo "if") garantisce il riaggancio
+            // anche quando un frame copre più di un set (scroll molto veloci).
             if (!isHorizontal && setSize > 0) {
-                if (currentScroll >= setSize * (MIDDLE_SET + 1)) {
+                while (currentScroll >= setSize * (MIDDLE_SET + 1)) {
                     currentScroll -= setSize;
                     targetScroll -= setSize;
-                } else if (currentScroll <= setSize * (MIDDLE_SET - 1)) {
+                }
+                while (currentScroll <= setSize * (MIDDLE_SET - 1)) {
                     currentScroll += setSize;
                     targetScroll += setSize;
                 }
