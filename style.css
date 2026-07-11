@@ -36,8 +36,7 @@ body {
 a,
 button,
 .project-image-placeholder,
-.close-detail,
-.bio-toggle {
+.close-detail {
     cursor: none !important;
 }
 
@@ -235,83 +234,8 @@ h2 {
     color: #4A4A4A;
 }
 
-/* Bio Section */
-.bio-toggle {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.bio-toggle-icon {
-    font-size: 16px;
-    font-weight: 300;
-    line-height: 1;
-}
-
-.bio-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease, opacity 0.4s ease;
-    opacity: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.bio-content.open {
-    max-height: 1000px;
-    opacity: 1;
-    border-bottom: 1px solid var(--border-color);
-}
-
 .sidebar {
     padding-right: 1px;
-}
-
-.bio-text {
-    font-family: 'Chivo Mono', monospace;
-    font-size: 12px;
-    line-height: 1.5;
-    color: var(--text-color);
-    text-transform: none;
-    letter-spacing: normal;
-    margin-bottom: 1.5rem;
-}
-
-.bio-text p {
-    margin-bottom: 1.5rem;
-}
-
-.bio-section {
-    margin-bottom: 1.2rem;
-}
-
-.bio-section:last-child {
-    margin-bottom: 0;
-}
-
-.bio-section-title {
-    display: flex;
-    align-items: center;
-    font-size: 12px;
-    font-weight: 300;
-    margin-bottom: 0.3rem;
-    font-family: 'Chivo Mono', monospace;
-}
-
-.bio-icon {
-    width: 14px;
-    height: 14px;
-    margin-right: 6px;
-}
-
-.bio-text ul {
-    list-style-type: disc;
-    padding-left: 16px;
-    margin-bottom: 0;
-}
-
-.bio-text li {
-    margin-bottom: 0.2rem;
 }
 
 .sidebar-footer {
@@ -332,7 +256,7 @@ h2 {
 }
 
 .project {
-    margin-bottom: 3.5rem;
+    margin-bottom: 1.75rem;
     display: flex;
     flex-direction: column;
 }
@@ -396,8 +320,7 @@ h2 {
     a,
     button,
     .project-image-placeholder,
-    .close-detail,
-    .bio-toggle {
+    .close-detail {
         cursor: auto !important;
     }
 

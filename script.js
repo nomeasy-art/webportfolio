@@ -191,30 +191,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Detect hover on clickable elements
     document.addEventListener('mouseover', (e) => {
-        if (e.target.closest('a, button, .project-image-placeholder, .close-detail, .bio-toggle')) {
+        if (e.target.closest('a, button, .project-image-placeholder, .close-detail')) {
             cursor.classList.add('is-clickable');
         }
     });
 
     document.addEventListener('mouseout', (e) => {
-        if (e.target.closest('a, button, .project-image-placeholder, .close-detail, .bio-toggle')) {
+        if (e.target.closest('a, button, .project-image-placeholder, .close-detail')) {
             cursor.classList.remove('is-clickable');
         }
     });
-
-    // Bio toggle logic
-    const bioToggle = document.querySelector('.bio-toggle');
-    const bioContent = document.querySelector('.bio-content');
-    if (bioToggle && bioContent) {
-        bioToggle.addEventListener('click', () => {
-            bioToggle.classList.toggle('active');
-            bioContent.classList.toggle('open');
-            const icon = bioToggle.querySelector('.bio-toggle-icon');
-            if (icon) {
-                icon.textContent = bioToggle.classList.contains('active') ? '—' : '+';
-            }
-        });
-    }
     // ---------------------------
 
     // --- SETUP STATIC SMOOTH SCROLLS ---
