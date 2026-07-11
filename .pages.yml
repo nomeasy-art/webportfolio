@@ -22,7 +22,7 @@ content:
         label: Collaboratore
         type: string
       - name: year
-        label: Anno
+        label: Collaboratori
         type: string
       - name: description
         label: Descrizione
