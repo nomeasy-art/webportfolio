@@ -48,15 +48,16 @@ content:
         list: true
       - name: mainImageUrl
         label: Immagine o Video Principale
-        type: image
+        type: file
         options:
           extensions: [jpg, jpeg, png, webp, gif, mp4, webm]
       - name: gallery
         label: Galleria (Immagini e Video)
-        type: image
+        type: file
         options:
           multiple:
             max: 20
+          unique: true
           extensions: [jpg, jpeg, png, webp, gif, mp4, webm]
       - name: externalLink
         label: Link Esterno
