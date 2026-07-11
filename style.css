@@ -759,33 +759,22 @@ body.detail-active .active-column .scroll-wrapper {
 
 @media (max-width: 768px) {
     .project-detail-view {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: 100;
-        background: var(--bg-color);
-        margin: 0;
-        padding: 28px 0 24px 0;
         border-left: none;
+        margin-left: 0;
+        padding-left: 0;
+        padding-right: 0;
+        width: 100%;
         border-top: 1px solid var(--border-color);
+        padding-top: 28px;
     }
 
     .detail-scroll {
-        flex-direction: row;
-        align-items: flex-start;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        padding: 0 24px;
-        margin: 0 -24px;
-        gap: 15px;
-        /* Nessun margine extra in alto: lo spazio arriva dal padding-top del genitore */
+        margin-top: 0;
+        /* Remove top margin since we added padding-top to the parent, keeping total space identical */
     }
 
-    /* Sul carosello orizzontale mobile ogni foto occupa il proprio riquadro,
-       indipendentemente dal pattern orizzontale/verticale desktop. */
+    /* La disposizione a pattern (coppie affiancate) è solo desktop: su mobile
+       ogni foto torna a piena larghezza, impilata verticalmente come prima. */
     .image-row-pair {
         display: contents;
     }
@@ -796,5 +785,13 @@ body.detail-active .active-column .scroll-wrapper {
         min-width: calc(100vw - 48px);
         aspect-ratio: 1.6;
         margin: 0;
+    }
+
+    /* Nessuna animazione di reveal su mobile: le foto appaiono subito, come prima. */
+    .detail-scroll .large-image,
+    .detail-scroll .large-image.in-view {
+        opacity: 1;
+        transform: none;
+        transition: none;
     }
 }
