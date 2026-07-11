@@ -656,7 +656,8 @@ body.detail-active .active-column .scroll-wrapper {
 }
 
 .project-description {
-    font-family: 'Chivo Mono', monospace;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
     font-size: 12px;
     line-height: 1.5;
     color: var(--text-color);
