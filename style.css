@@ -490,6 +490,11 @@ h2 {
     body.detail-active .active-project-info {
         padding-top: 129px;
         overflow-y: visible !important;
+        /* Il transform (usato su desktop per lo smooth scroll GPU) va rimosso qui:
+           un antenato con transform fa sì che il position:fixed delle didascalie
+           si ancori al contenitore invece che al viewport, disallineandole a destra. */
+        transform: none;
+        will-change: auto;
     }
 }
 
