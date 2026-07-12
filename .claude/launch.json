@@ -4,8 +4,8 @@
     {
       "name": "portfolio",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["--yes", "http-server", "-p", "8741", "-c-1", "."],
-      "port": 8741
+      "runtimeArgs": ["-y", "http-server", "-p", "8734", "-c-1"],
+      "port": 8734
     }
   ]
 }

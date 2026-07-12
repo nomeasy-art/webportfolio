@@ -519,11 +519,28 @@ h2 {
     pointer-events: none;
     transform: translateX(100vw);
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    border-left: 1px solid var(--border-color);
     margin-left: -1.25rem;
     padding-left: 1.25rem;
     height: 100%;
     z-index: 5;
+}
+
+/* Linea divisoria separata dal pannello: entra dal basso con un ritardo
+   maggiore, così non attraversa la colonna sinistra ancora in movimento. */
+.project-detail-view::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: var(--border-color);
+    transform: translateY(100vh);
+}
+
+body.detail-active .project-detail-view::before {
+    animation: slideUpIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.35s;
 }
 
 body.detail-active .project-detail-view {
@@ -712,6 +729,10 @@ body.detail-active .active-column .scroll-wrapper {
         width: 100%;
         border-top: 1px solid var(--border-color);
         padding-top: 28px;
+    }
+
+    .project-detail-view::before {
+        display: none;
     }
 
     .detail-scroll {
