@@ -12,6 +12,59 @@
     box-sizing: border-box;
 }
 
+/* Intro "tenda veneziana": copre il sito al caricamento e si apre a lamelle.
+   Lo sfondo pieno sull'overlay garantisce la copertura totale già al primo
+   frame, prima ancora che il JS abbia generato le singole lamelle. */
+.intro-blinds {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-color);
+    transition: opacity 0.4s ease;
+}
+
+.intro-blinds.open {
+    background: transparent;
+}
+
+.intro-blinds.done {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.blind-slat-row {
+    flex: 1;
+    position: relative;
+}
+
+/* Sottile linea divisoria tra una lamella e l'altra: resta ferma mentre la
+   lamella si ritira, poi svanisce con la dissolvenza finale dell'overlay. */
+.blind-slat-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-color);
+    z-index: 1;
+}
+
+.blind-slat {
+    position: absolute;
+    inset: 0;
+    background: var(--bg-color);
+    transform-origin: 50% 0;
+    transition: transform 1.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--row-index) * 12ms);
+}
+
+.intro-blinds.open .blind-slat {
+    transform: scaleY(0);
+}
+
 html {
     overflow-x: hidden;
     max-width: 100%;

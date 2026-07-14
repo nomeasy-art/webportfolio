@@ -1,5 +1,40 @@
 // Projects are loaded locally from projects.json
 
+// --- INTRO: apertura a "tenda veneziana" ---
+// Genera le lamelle dentro l'overlay già presente nell'HTML e le apre subito
+// dopo il primo frame. L'overlay viene poi dissolto e rimosso dal DOM.
+(function setupIntroBlinds() {
+    const overlay = document.querySelector('.intro-blinds');
+    if (!overlay) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        overlay.remove();
+        return;
+    }
+
+    const rows = Math.max(10, Math.ceil(window.innerHeight / 44));
+    for (let i = 0; i < rows; i++) {
+        const row = document.createElement('div');
+        row.className = 'blind-slat-row';
+        row.style.setProperty('--row-index', i);
+        const slat = document.createElement('div');
+        slat.className = 'blind-slat';
+        row.appendChild(slat);
+        overlay.appendChild(row);
+    }
+
+    // Doppio rAF: assicura che lo stato "chiuso" venga dipinto almeno un
+    // frame prima dell'apertura, così la transizione parte sempre.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        overlay.classList.add('open');
+    }));
+
+    // Le lamelle finiscono di aprirsi intorno a ~1.7s (1.3s + stagger):
+    // a quel punto dissolvi le linee divisorie rimaste e rimuovi l'overlay.
+    setTimeout(() => overlay.classList.add('done'), 1700);
+    setTimeout(() => overlay.remove(), 2150);
+})();
+
 // --- UTILITY: PREMIUM SMOOTH SCROLL (INERTIAL LERP) ---
 function setupSmoothScroll(element, speed = 0.6, lerp = 0.08) {
     if (!element) return null;
