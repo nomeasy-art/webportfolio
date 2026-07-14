@@ -12,7 +12,7 @@
         return;
     }
 
-    const rows = Math.max(10, Math.ceil(window.innerHeight / 44));
+    const rows = Math.max(10, Math.ceil(window.innerHeight / 36));
     for (let i = 0; i < rows; i++) {
         const row = document.createElement('div');
         row.className = 'blind-slat-row';
@@ -23,16 +23,13 @@
         overlay.appendChild(row);
     }
 
-    // Doppio rAF: assicura che lo stato "chiuso" venga dipinto almeno un
-    // frame prima dell'apertura, così la transizione parte sempre.
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-        overlay.classList.add('open');
-    }));
-
-    // Le lamelle finiscono di aprirsi intorno a ~1.7s (1.3s + stagger):
-    // a quel punto dissolvi le linee divisorie rimaste e rimuovi l'overlay.
-    setTimeout(() => overlay.classList.add('done'), 1700);
-    setTimeout(() => overlay.remove(), 2150);
+    // Tende chiuse per ~1s, poi via all'apertura. Le linee divisorie
+    // svaniscono via CSS in sincrono con la fine corsa di ogni lamella,
+    // quindi qui resta solo da rimuovere l'overlay a giochi finiti.
+    const HOLD_MS = 1000;
+    const OPEN_MS = 1300 + rows * 12;
+    setTimeout(() => overlay.classList.add('open'), HOLD_MS);
+    setTimeout(() => overlay.remove(), HOLD_MS + OPEN_MS + 150);
 })();
 
 // --- UTILITY: PREMIUM SMOOTH SCROLL (INERTIAL LERP) ---

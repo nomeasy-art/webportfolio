@@ -29,18 +29,14 @@
     background: transparent;
 }
 
-.intro-blinds.done {
-    opacity: 0;
-    pointer-events: none;
-}
-
 .blind-slat-row {
     flex: 1;
     position: relative;
 }
 
 /* Sottile linea divisoria tra una lamella e l'altra: resta ferma mentre la
-   lamella si ritira, poi svanisce con la dissolvenza finale dell'overlay. */
+   lamella si ritira e svanisce nell'istante esatto in cui la lamella finisce
+   la sua corsa (delay = corsa della lamella meno la durata della dissolvenza). */
 .blind-slat-row::before {
     content: '';
     position: absolute;
@@ -50,6 +46,12 @@
     height: 1px;
     background: var(--border-color);
     z-index: 1;
+    transition: opacity 0.3s ease;
+}
+
+.intro-blinds.open .blind-slat-row::before {
+    opacity: 0;
+    transition-delay: calc(1s + var(--row-index) * 12ms);
 }
 
 .blind-slat {
