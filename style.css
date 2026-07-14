@@ -740,18 +740,11 @@ body.detail-active .active-column .scroll-wrapper {
         /* Remove top margin since we added padding-top to the parent, keeping total space identical */
     }
 
-    /* La disposizione a pattern (coppie affiancate) è solo desktop: su mobile
-       ogni foto torna a piena larghezza, impilata verticalmente come prima. */
+    /* La galleria segue lo stesso pattern del desktop: due foto orizzontali,
+       poi due verticali affiancate, e così via. */
     .image-row-pair {
-        display: contents;
-    }
-
-    .large-image.vertical,
-    .large-image.vertical.solo {
         width: calc(100vw - 48px);
-        min-width: calc(100vw - 48px);
-        aspect-ratio: 1.6;
-        margin: 0;
+        flex-shrink: 0;
     }
 
     /* Nessuna animazione di reveal su mobile: le foto appaiono subito, come prima. */
