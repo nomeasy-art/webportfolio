@@ -35,8 +35,8 @@
 }
 
 /* Sottile linea divisoria tra una lamella e l'altra: resta ferma mentre la
-   lamella si ritira e svanisce nell'istante esatto in cui la lamella finisce
-   la sua corsa (delay = corsa della lamella meno la durata della dissolvenza). */
+   lamella si ritira e svanisce mezzo secondo prima che la lamella finisca la
+   corsa, quando ormai la lamella è visivamente quasi sparita (easing out). */
 .blind-slat-row::before {
     content: '';
     position: absolute;
@@ -51,7 +51,28 @@
 
 .intro-blinds.open .blind-slat-row::before {
     opacity: 0;
-    transition-delay: calc(1s + var(--row-index) * 12ms);
+    transition-delay: calc(0.5s + var(--row-index) * 12ms);
+}
+
+/* Righe di testo appoggiate sulle lamelle: vivono dentro la lamella stessa,
+   così quando questa si ritira il testo si schiaccia e sparisce con lei. */
+.blind-text {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-family: 'Chivo Mono', monospace;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #8f8a76;
+}
+
+@media (max-width: 768px) {
+    .blind-text {
+        font-size: 10px;
+    }
 }
 
 .blind-slat {

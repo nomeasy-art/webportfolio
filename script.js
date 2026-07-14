@@ -13,6 +13,7 @@
     }
 
     const rows = Math.max(10, Math.ceil(window.innerHeight / 36));
+    const slats = [];
     for (let i = 0; i < rows; i++) {
         const row = document.createElement('div');
         row.className = 'blind-slat-row';
@@ -21,10 +22,69 @@
         slat.className = 'blind-slat';
         row.appendChild(slat);
         overlay.appendChild(row);
+        slats.push(slat);
     }
 
+    // --- Testo appoggiato sulle lamelle ---
+    // Ogni riga di testo è figlia della propria lamella: quando questa si
+    // ritira (scaleY -> 0) il testo si schiaccia e sparisce insieme a lei.
+    const LEFT_COL = 0.21;   // colonna sinistra dei testi
+    const SECOND_COL = 0.41; // seconda colonna (design gallery / data)
+    const RIGHT_EDGE = 0.79; // margine destro del paragrafo
+
+    const addText = (rowIndex, entries) => {
+        const slat = slats[rowIndex];
+        if (!slat) return; // schermi molto bassi: le righe oltre il fondo si saltano
+        entries.forEach(([left, text]) => {
+            const span = document.createElement('span');
+            span.className = 'blind-text';
+            span.style.left = (left * 100) + '%';
+            span.textContent = text;
+            slat.appendChild(span);
+        });
+    };
+
+    addText(Math.round(rows * 0.17), [
+        [LEFT_COL, 'Vincenzo Fuccia'],
+        [SECOND_COL, 'Design Gallery']
+    ]);
+
+    // Paragrafo centrale: spezzato in righe su misura della larghezza reale
+    // dello schermo, così ogni riga cade esattamente sulla propria lamella.
+    const paragraph = "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's body type sheets. The industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley,";
+    const measurer = document.createElement('span');
+    measurer.className = 'blind-text';
+    measurer.style.position = 'fixed';
+    measurer.style.visibility = 'hidden';
+    overlay.appendChild(measurer);
+    const maxLineWidth = window.innerWidth * (RIGHT_EDGE - LEFT_COL);
+    const lines = [];
+    let currentLine = '';
+    paragraph.split(' ').forEach(word => {
+        measurer.textContent = currentLine ? currentLine + ' ' + word : word;
+        if (measurer.offsetWidth > maxLineWidth && currentLine) {
+            lines.push(currentLine);
+            currentLine = word;
+        } else {
+            currentLine = measurer.textContent;
+        }
+    });
+    if (currentLine) lines.push(currentLine);
+    measurer.remove();
+
+    const paragraphStart = Math.round(rows * 0.38);
+    lines.forEach((line, k) => addText(paragraphStart + k, [[LEFT_COL, line]]));
+
+    // Data di ultimo aggiornamento generata da oggi (es. "JULY, 14 2026")
+    const now = new Date();
+    const dateStr = now.toLocaleString('en-US', { month: 'long' }) + ', ' + now.getDate() + ' ' + now.getFullYear();
+    addText(Math.round(rows * 0.84), [
+        [LEFT_COL, 'Last update'],
+        [SECOND_COL, dateStr]
+    ]);
+
     // Tende chiuse per ~1s, poi via all'apertura. Le linee divisorie
-    // svaniscono via CSS in sincrono con la fine corsa di ogni lamella,
+    // svaniscono via CSS mezzo secondo prima della fine corsa delle lamelle,
     // quindi qui resta solo da rimuovere l'overlay a giochi finiti.
     const HOLD_MS = 1000;
     const OPEN_MS = 1300 + rows * 12;
