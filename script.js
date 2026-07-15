@@ -12,7 +12,7 @@
         return;
     }
 
-    const rows = Math.max(10, Math.ceil(window.innerHeight / 36));
+    const rows = Math.max(10, Math.ceil(window.innerHeight / 30));
     const slats = [];
     for (let i = 0; i < rows; i++) {
         const row = document.createElement('div');
