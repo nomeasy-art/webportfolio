@@ -156,25 +156,10 @@ function urlVisibile(media) {
 
 // ------------------------------------------------------------- interfaccia
 
-function adattaAltezza(area) {
-    area.style.height = 'auto';
-    area.style.height = area.scrollHeight + 'px';
-}
-
-// Va rifatto quando i font sono pronti: misurare prima darebbe altezze
-// sbagliate (calcolate con il carattere di ripiego) e testi tagliati.
-function adattaDescrizioni() {
-    document.querySelectorAll('.description').forEach(adattaAltezza);
-}
-
 function render() {
     elementi.rows.innerHTML = '';
     elementi.rows.appendChild(creaRiga(nuovo, true));
     progetti.forEach(p => elementi.rows.appendChild(creaRiga(p, false)));
-    adattaDescrizioni();
-    if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(adattaDescrizioni);
-    }
 }
 
 function creaRiga(progetto, isNuovo) {
@@ -218,7 +203,6 @@ function creaRiga(progetto, isNuovo) {
     riga.querySelector('.description').addEventListener('input', e => {
         progetto.dati.descriptionIt = e.target.value;
         progetto.modificato = true;
-        adattaAltezza(e.target);
     });
     riga.querySelector('.category-select').addEventListener('change', e => {
         progetto.dati.category = e.target.value;

@@ -6,7 +6,7 @@
     --text-muted-color: #4A4A4A;
     --border-color: #E2DEC9;
     --placeholder-bg: #EAE7D9;
-    --slot-height: 128px;
+    --slot-height: 130px;
 }
 
 * {
@@ -238,11 +238,22 @@ h1 {
 
 /* Anteprima e dati stanno nella stessa griglia: così l'anteprima si allunga
    da sola dal titolo fino all'ultima delle tre righe, senza misure fisse. */
+.row-identity,
+.row-description,
+.gallery {
+    height: 130px;
+}
+
 .row-identity {
     display: grid;
     grid-template-columns: 110px minmax(0, 1fr);
     gap: 2.5rem;
     align-items: stretch;
+}
+
+.row-description {
+    display: flex;
+    flex-direction: column;
 }
 
 /* line-height 1: il bordo alto del blocco coincide con la parola, così
@@ -257,7 +268,7 @@ h1 {
     color: var(--text-color);
     display: flex;
     align-items: flex-start;
-    margin-bottom: 24px;
+    margin-bottom: 25px;
 }
 
 .category-select {
@@ -322,8 +333,9 @@ h1 {
     border: none;
     resize: none;
     width: 100%;
-    min-height: 130px;
-    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .description:focus {
@@ -335,7 +347,6 @@ h1 {
 .gallery {
     display: flex;
     align-items: flex-start;
-    align-self: stretch;
     gap: 12px;
     overflow-x: auto;
     min-width: 0;
