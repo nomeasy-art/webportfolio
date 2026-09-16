@@ -3,6 +3,7 @@
 // e non serve più passare dagli script a mano.
 
 const CATEGORIE = [
+    ['', 'seleziona categoria'],
     ['editorial', 'editorial'],
     ['packaging', 'packaging'],
     ['book-cover', 'book cover'],
@@ -41,7 +42,7 @@ function progettoVuoto() {
         modificato: false,
         dati: {
             title: '', slug: '', collaborator: '', year: '', description: '',
-            category: 'editorial', tags: [], mainImageUrl: '', gallery: [],
+            category: '', tags: [], mainImageUrl: '', gallery: [],
             externalLink: '', featured: false, active: true, order: null,
         },
         media: [],      // galleria: { url, bytes?, lqip?, tipo }
@@ -183,17 +184,17 @@ function creaRiga(progetto, isNuovo) {
                 </div>
             </div>
             <div class="row-description">
-                <div class="col-title">Descrizione:</div>
-                <textarea class="description" placeholder="DESCRIZIONE"></textarea>
+                <div class="description-label">Descrizione:</div>
+                <textarea class="description" placeholder="${isNuovo ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' : 'DESCRIZIONE'}"></textarea>
             </div>
         </div>
         <div class="gallery"></div>
-        <div class="project-actions">
+        <div class="project-actions${isNuovo ? ' is-draft-actions' : ''}">
             <div class="visibility-toggle" role="group" aria-label="Visibilità del progetto">
                 <button type="button" class="visibility-choice" data-active="true">ATTIVO</button>
                 <button type="button" class="visibility-choice" data-active="false">DISATTIVO</button>
             </div>
-            <button type="button" class="hold-delete" aria-label="Tieni premuto per eliminare il progetto"><span>ELIMINA</span></button>
+            ${isNuovo ? '' : '<button type="button" class="hold-delete" aria-label="Tieni premuto per eliminare il progetto"><span>ELIMINA</span></button>'}
         </div>
     `;
 
@@ -227,7 +228,8 @@ function creaRiga(progetto, isNuovo) {
         });
     });
 
-    attivaEliminazione(riga.querySelector('.hold-delete'), progetto);
+    const elimina = riga.querySelector('.hold-delete');
+    if (elimina) attivaEliminazione(elimina, progetto);
 
     const preview = riga.querySelector('.preview-slot');
     disegnaSlot(preview, progetto.preview, null, progetto);
@@ -438,6 +440,8 @@ async function salva() {
     if (!daSalvare.length) return stato('Niente da salvare.');
     const senzaTitolo = daSalvare.find(p => !(p.dati.title || '').trim());
     if (senzaTitolo) return stato('Ogni progetto deve avere un nome.', true);
+    const senzaCategoria = daSalvare.find(p => !(p.dati.category || '').trim());
+    if (senzaCategoria) return stato('Seleziona una categoria per ogni progetto.', true);
 
     elementi.save.disabled = true;
     try {

@@ -8,6 +8,7 @@
     --placeholder-bg: #EAE7D9;
     --slot-height: 134px;
     --control-column: 356px;
+    --gallery-gap: 0.5rem;
 }
 
 * {
@@ -244,6 +245,10 @@ h1 {
    all'anteprima, la descrizione cade esattamente sotto entrambi. */
 .project-editor {
     min-width: 0;
+    height: calc((3 * var(--slot-height)) + (2 * var(--gallery-gap)));
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .row-identity {
@@ -257,6 +262,8 @@ h1 {
     display: flex;
     flex-direction: column;
     margin-top: 1.75rem;
+    flex: 1;
+    min-height: 0;
 }
 
 /* line-height 1: il bordo alto del blocco coincide con la parola, così
@@ -336,12 +343,23 @@ h1 {
     border: none;
     resize: none;
     width: 100%;
-    min-height: 8rem;
-    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .description:focus {
     outline: none;
+}
+
+.description-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text-color);
+    margin-bottom: 0.35rem;
 }
 
 /* Dodici slot sempre presenti, letti in riga da sinistra a destra.
@@ -350,7 +368,7 @@ h1 {
     display: grid;
     grid-template-columns: 2fr 2fr 1fr 1fr;
     grid-template-rows: repeat(3, var(--slot-height));
-    gap: 0.5rem;
+    gap: var(--gallery-gap);
     min-width: 0;
     margin-left: 3.5rem;
 }
@@ -367,6 +385,13 @@ h1 {
     place-items: center;
     padding: 0;
     color: var(--text-muted-color);
+}
+
+.slot:not(.filled) .placeholder-icon {
+    width: 16px;
+    height: 16px;
+    color: #c5c3ba;
+    opacity: 0.85;
 }
 
 /* L'anteprima è volutamente più alta delle tre righe dati, come nel layout. */
@@ -439,6 +464,10 @@ h1 {
     display: grid;
     grid-template-rows: 204px 204px;
     gap: 0.5rem;
+}
+
+.is-draft-actions .visibility-toggle {
+    grid-row: 1;
 }
 
 .visibility-toggle {
@@ -541,6 +570,7 @@ h1 {
     :root {
         --slot-height: 67px;
         --control-column: 178px;
+        --gallery-gap: 0.25rem;
     }
 
     body {
@@ -581,13 +611,13 @@ h1 {
         margin-bottom: 0.75rem;
     }
 
-    .description {
-        min-height: 4rem;
+    .description-label {
+        font-size: 12px;
+        margin-bottom: 0.2rem;
     }
 
     .gallery {
         grid-template-rows: repeat(3, var(--slot-height));
-        gap: 0.25rem;
         margin-left: 1.75rem;
     }
 
@@ -661,6 +691,14 @@ h1 {
     .row {
         grid-template-columns: minmax(0, 1fr);
         gap: 1.5rem;
+    }
+
+    .project-editor {
+        height: auto;
+    }
+
+    .description {
+        min-height: 8rem;
     }
 
     .gallery {
