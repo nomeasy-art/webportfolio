@@ -9,13 +9,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@300&family=Inter:wght@400;600&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="admin.css" />
-    <link rel="icon" href="../favicon.svg" />
+    <!-- Percorsi assoluti: così la pagina funziona sia su /admin sia su /admin/ -->
+    <link rel="stylesheet" href="/admin/admin.css" />
+    <link rel="icon" href="/favicon.svg" />
 </head>
 
 <body>
     <!-- Schermata di accesso -->
-    <section class="login" id="login" hidden>
+    <section class="login" id="login">
         <form class="login-box" id="login-form">
             <h1>design gallery</h1>
             <p class="login-label">DASHBOARD</p>
@@ -44,9 +45,9 @@
 
             <footer class="sidebar-footer">
                 <div class="social-icons">
-                    <img src="../Instagram.svg" alt="Instagram" class="social-icon">
-                    <img src="../TikTok.svg" alt="TikTok" class="social-icon">
-                    <img src="../Linkedin.svg" alt="Linkedin" class="social-icon">
+                    <img src="/Instagram.svg" alt="Instagram" class="social-icon">
+                    <img src="/TikTok.svg" alt="TikTok" class="social-icon">
+                    <img src="/Linkedin.svg" alt="Linkedin" class="social-icon">
                 </div>
                 <button type="button" class="logout" id="logout">ESCI</button>
             </footer>
@@ -60,7 +61,7 @@
     <!-- Selettore file: uno solo, riusato sia per la preview sia per la galleria -->
     <input type="file" id="file-input" accept="image/*,video/mp4,video/webm" multiple hidden />
 
-    <script type="module" src="admin.js"></script>
+    <script type="module" src="/admin/admin.js"></script>
 </body>
 
 </html>
