@@ -534,6 +534,69 @@ h1 {
     }
 }
 
+/* La reference è stata catturata su un display Retina: qui le quote desktop
+   sono dimezzate rispetto alla tavola larga, ma i tre blocchi restano sempre
+   sulla stessa riga. */
+@media (min-width: 1201px) and (max-width: 1560px) {
+    :root {
+        --slot-height: 67px;
+        --control-column: 178px;
+    }
+
+    body {
+        padding: 40px 45px 0;
+    }
+
+    .admin-grid {
+        max-width: 1800px;
+        margin: 0 auto;
+    }
+
+    .rows {
+        padding-left: 1.25rem;
+    }
+
+    .row {
+        grid-template-columns: minmax(0, 359px) minmax(0, 1fr) var(--control-column);
+        gap: 1rem;
+        padding-bottom: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .row-identity {
+        grid-template-columns: 100px minmax(0, 1fr);
+        gap: 1rem;
+    }
+
+    .preview-slot.slot {
+        width: 100px;
+        height: 121px;
+    }
+
+    .row-description {
+        margin-top: 0.9rem;
+    }
+
+    .col-title {
+        margin-bottom: 0.75rem;
+    }
+
+    .description {
+        min-height: 4rem;
+    }
+
+    .gallery {
+        grid-template-rows: repeat(3, var(--slot-height));
+        gap: 0.25rem;
+        margin-left: 1.75rem;
+    }
+
+    .project-actions {
+        grid-template-rows: 102px 102px;
+        gap: 0.25rem;
+    }
+}
+
 /* Lo stesso sistema si riduce proporzionalmente sui desktop meno larghi
    della tavola originale, senza introdurre scorrimento orizzontale. */
 @media (max-width: 2350px) and (min-width: 1561px) {
@@ -570,7 +633,7 @@ h1 {
     }
 }
 
-@media (max-width: 1500px) {
+@media (max-width: 1200px) {
     body {
         padding: 24px 24px 0;
     }
