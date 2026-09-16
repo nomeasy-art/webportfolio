@@ -775,6 +775,10 @@ body.detail-closing .close-detail {
     width: 100%;
     aspect-ratio: 1.6;
     background-color: var(--placeholder-bg);
+    /* La galleria scorre dentro un contenitore flex in colonna: senza questo
+       i riquadri verrebbero compressi fino ad altezza zero invece di
+       mantenere le loro proporzioni ed eccedere (è lo scroll a gestirli). */
+    flex-shrink: 0;
     /* Effetto maschera: l'immagine resta ferma alla sua dimensione definitiva,
        è la finestra che la ritaglia ad aprirsi dal centro verso i bordi.
        Niente will-change qui: su WebKit può bloccare il ridisegno del ritaglio. */
@@ -801,6 +805,7 @@ body.detail-closing .close-detail {
     display: flex;
     width: 100%;
     gap: 20px;
+    flex-shrink: 0;
 }
 
 .image-row-pair .large-image {
