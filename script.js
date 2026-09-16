@@ -643,6 +643,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
+            // In apertura la discesa delle colonne è quella di sempre: togliamo
+            // l'eventuale ritardo rimasto dalla chiusura precedente.
+            allColumnsIncludingSidebar.forEach(c => c.classList.remove('delayed-return'));
+
             // Calcola di quante posizioni deve spostarsi a sinistra
             const colIndex = allColumnsIncludingSidebar.indexOf(col);
             // La sidebar (index 0) sparisce, quindi la colonna selezionata deve
@@ -753,8 +757,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Aggiungi la classe di chiusura per innescare l'animazione di uscita
                 document.body.classList.add('detail-closing');
 
-                // Ripristina tutte le colonne alla loro posizione originale
+                // Ripristina tutte le colonne alla loro posizione originale.
+                // Quelle che risalgono dal basso partono un attimo dopo e con
+                // una corsa un po' più lunga (classe .delayed-return); la colonna
+                // del progetto torna al suo posto con la tempistica di sempre.
                 allCols.forEach(c => {
+                    c.classList.toggle('delayed-return', c !== activeCol);
                     c.classList.remove('hidden-column');
                     c.classList.remove('active-column');
                     c.style.transform = ''; // Annulla il translateX
@@ -767,8 +775,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 });
 
-                // Ripristina la sidebar (Design Gallery)
+                // Ripristina la sidebar (Design Gallery): risale dal basso
+                // insieme alle altre colonne, quindi stesso ritardo.
                 if (sidebarEl) {
+                    sidebarEl.classList.add('delayed-return');
                     sidebarEl.classList.remove('hidden-column');
                 }
 
