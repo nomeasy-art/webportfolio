@@ -9,6 +9,7 @@
     --slot-height: 134px;
     --control-column: 356px;
     --gallery-gap: 0.5rem;
+    --admin-top-offset: 70px;
 }
 
 * {
@@ -23,11 +24,19 @@
     display: none !important;
 }
 
+html {
+    height: 100%;
+    overscroll-behavior: none;
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Chivo Mono', monospace;
     font-weight: 300;
+    height: 100vh;
+    overflow: hidden;
+    overscroll-behavior: none;
     padding: 70px 80px 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -141,7 +150,8 @@ h1 {
     /* L'area operativa termina prima del margine destro, come nella reference. */
     max-width: 2454px;
     margin: 0;
-    min-height: calc(100vh - 40px);
+    height: calc(100vh - var(--admin-top-offset));
+    min-height: 0;
 }
 
 .column {
@@ -166,6 +176,15 @@ h1 {
     margin-left: -1.25rem;
     padding-left: 3rem;
     border-left: 1px solid var(--border-color);
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.rows::-webkit-scrollbar {
+    display: none;
 }
 
 .details-section {
@@ -571,6 +590,7 @@ h1 {
         --slot-height: 67px;
         --control-column: 178px;
         --gallery-gap: 0.25rem;
+        --admin-top-offset: 40px;
     }
 
     body {
@@ -664,13 +684,21 @@ h1 {
 }
 
 @media (max-width: 1200px) {
+    :root {
+        --admin-top-offset: 24px;
+    }
+
     body {
         padding: 24px 24px 0;
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
     }
 
     .admin-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
+        height: auto;
     }
 
     .sidebar {
@@ -686,6 +714,7 @@ h1 {
         border-left: none;
         border-top: 1px solid var(--border-color);
         padding-top: 1.5rem;
+        overflow: visible;
     }
 
     .row {
