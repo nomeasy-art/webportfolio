@@ -1,3 +1,5 @@
+/* Dashboard: stessi valori del sito (style.css) perché tutto combaci —
+   stessa griglia a 5 colonne, stesso passo, stesse righe. */
 :root {
     --bg-color: #fffbf0;
     --text-color: #1A1A1A;
@@ -20,47 +22,56 @@
 }
 
 body {
-    background: var(--bg-color);
+    background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Chivo Mono', monospace;
     font-weight: 300;
+    padding: 40px 45px 0 45px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-h1,
-.col-title {
+h1 {
     font-family: 'Inter', sans-serif;
+    font-size: 20px;
     font-weight: 600;
     letter-spacing: -0.02em;
     color: var(--text-color);
 }
 
-/* --- Accesso --- */
-.login {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 24px;
-}
-
-.login-box {
-    width: min(340px, 100%);
+/* Stessa intestazione del sito, così "design gallery" cade alla stessa altezza */
+.logo-header {
     display: flex;
-    flex-direction: column;
-    gap: 14px;
+    align-items: center;
+    height: 36px;
+    margin-bottom: 8px;
+    gap: 0.75rem;
 }
 
-.login-box h1 {
-    font-size: 21px;
-}
-
-.login-label,
 .info-row {
     font-size: 12px;
     text-transform: uppercase;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border-color);
     letter-spacing: -0.4px;
     color: var(--text-muted-color);
+}
+
+/* --- Accesso --- */
+.login {
+    min-height: calc(100vh - 40px);
+    display: grid;
+    place-items: center;
+}
+
+.login-box {
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-box h1 {
+    margin-bottom: 8px;
 }
 
 .login-box input {
@@ -68,30 +79,35 @@ h1,
     font-size: 12px;
     letter-spacing: -0.4px;
     text-transform: uppercase;
-    padding: 0.7rem 0.9rem;
-    border: 1px solid var(--border-color);
-    border-radius: 999px;
-    background: transparent;
     color: var(--text-color);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.4rem 0;
 }
 
 .login-box input:focus {
     outline: none;
-    border-color: var(--text-color);
+    border-bottom-color: var(--text-color);
+}
+
+.login-box .button {
+    margin-top: 1.25rem;
 }
 
 .login-error {
     font-size: 12px;
+    letter-spacing: -0.4px;
     color: #a33;
+    margin-top: 0.75rem;
 }
 
 .button {
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 13px;
-    letter-spacing: 0.02em;
     text-transform: uppercase;
-    padding: 0.75rem 1rem;
+    padding: 0.7rem 1rem;
     border: 1px solid var(--text-color);
     border-radius: 999px;
     background: transparent;
@@ -115,35 +131,42 @@ h1,
     color: var(--text-color);
 }
 
-/* --- Impianto generale --- */
-.layout {
+/* --- Griglia identica a quella del sito --- */
+.admin-grid {
     display: grid;
-    grid-template-columns: 282px minmax(0, 1fr);
-    min-height: 100vh;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2.5rem;
+    max-width: 1800px;
+    margin: 0 auto;
+    min-height: calc(100vh - 40px);
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
 .sidebar {
-    display: flex;
-    flex-direction: column;
-    padding: 40px 24px 30px 45px;
-    border-right: 1px solid var(--border-color);
+    grid-column: 1;
     position: sticky;
-    top: 0;
-    height: 100vh;
+    top: 40px;
+    align-self: start;
+    height: calc(100vh - 40px);
+    padding-right: 1px;
 }
 
-.logo-header h1 {
-    font-size: 21px;
-    margin-bottom: 20px;
+/* Stessa linea di divisione del sito: vive dentro l'area con i margini,
+   non arriva mai a filo finestra. */
+.rows {
+    grid-column: 2 / -1;
+    margin-left: -1.25rem;
+    padding-left: 1.25rem;
+    border-left: 1px solid var(--border-color);
 }
 
 .details-section {
-    margin-bottom: 24px;
-}
-
-.info-row {
-    padding: 0.4rem 0;
-    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
 }
 
 .save-button {
@@ -151,20 +174,21 @@ h1,
 }
 
 .save-state {
-    font-size: 11px;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.4px;
     color: var(--text-muted-color);
-    margin-top: 10px;
+    margin-top: 0.6rem;
     min-height: 1.2em;
 }
 
 .sidebar-footer {
-    margin-top: auto;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 1rem;
+    padding-bottom: 30px;
 }
 
 .social-icons {
@@ -180,9 +204,9 @@ h1,
 
 .logout {
     font: inherit;
-    font-size: 11px;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.4px;
     background: none;
     border: none;
     color: var(--text-muted-color);
@@ -191,61 +215,42 @@ h1,
 }
 
 /* --- Righe progetto --- */
-.rows {
-    padding: 0;
-}
-
 .loading {
     font-size: 12px;
     text-transform: uppercase;
+    letter-spacing: -0.4px;
     color: var(--text-muted-color);
-    padding: 40px 45px;
 }
 
 .row {
     display: grid;
-    grid-template-columns: 110px 235px minmax(220px, 300px) minmax(0, 1fr);
-    gap: 18px;
+    grid-template-columns: 110px minmax(0, 235px) minmax(0, 300px) minmax(0, 1fr);
+    gap: 2.5rem;
     align-items: start;
-    padding: 36px 0 36px 45px;
+    padding-bottom: 2.5rem;
+    margin-bottom: 2.5rem;
     border-bottom: 1px solid var(--border-color);
 }
 
-.row.is-new .row-hint {
-    display: block;
+.row:last-child {
+    border-bottom: none;
 }
 
-.row-hint {
-    display: none;
-    grid-column: 2 / -1;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: -0.3px;
-    color: var(--text-muted-color);
-    margin-bottom: -8px;
-}
-
-/* Riquadro preview del progetto */
-.preview-slot {
-    width: 110px;
-    aspect-ratio: 0.8;
-}
-
-/* Colonna centrale */
 .col-title {
-    font-size: 19px;
-    margin-bottom: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-color);
     display: flex;
     align-items: center;
-    gap: 6px;
+    height: 36px;
+    margin-bottom: 8px;
 }
 
 .category-select {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 19px;
-    letter-spacing: -0.02em;
-    color: var(--text-color);
+    font: inherit;
+    color: inherit;
     background: transparent;
     border: none;
     padding: 0;
@@ -261,8 +266,12 @@ h1,
     display: flex;
     align-items: center;
     gap: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
     padding: 0.4rem 0;
     border-bottom: 1px solid var(--border-color);
+    letter-spacing: -0.4px;
+    color: var(--text-muted-color);
 }
 
 .field svg {
@@ -272,18 +281,18 @@ h1,
 
 .field input {
     font: inherit;
-    font-size: 12px;
-    letter-spacing: -0.4px;
-    text-transform: uppercase;
-    color: var(--text-muted-color);
+    color: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
     background: transparent;
     border: none;
     width: 100%;
+    min-width: 0;
 }
 
 .field input::placeholder {
     color: var(--text-muted-color);
-    opacity: 0.75;
+    opacity: 0.6;
 }
 
 .field input:focus {
@@ -291,7 +300,6 @@ h1,
     color: var(--text-color);
 }
 
-/* Descrizione */
 .description {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
@@ -300,23 +308,24 @@ h1,
     color: var(--text-color);
     background: transparent;
     border: none;
-    resize: vertical;
+    resize: none;
     width: 100%;
     min-height: 130px;
+    overflow: hidden;
 }
 
 .description:focus {
     outline: none;
 }
 
-/* Galleria */
+/* Galleria: scorre dentro la propria colonna, non sfonda la pagina */
 .gallery {
-    border-left: 1px solid var(--border-color);
-    padding-left: 24px;
     display: flex;
     gap: 12px;
     overflow-x: auto;
-    padding-bottom: 8px;
+    min-width: 0;
+    margin-top: 44px;
+    padding-bottom: 10px;
     scrollbar-width: thin;
 }
 
@@ -331,6 +340,7 @@ h1,
     display: grid;
     place-items: center;
     padding: 0;
+    color: var(--text-muted-color);
 }
 
 .slot.horizontal {
@@ -341,18 +351,16 @@ h1,
     width: calc(var(--slot-height) * 0.8);
 }
 
+/* Riquadro della preview: stesse proporzioni della miniatura sul sito */
 .preview-slot.slot {
-    height: auto;
     width: 110px;
-}
-
-.slot .placeholder-icon {
-    opacity: 0.5;
+    height: auto;
+    aspect-ratio: 0.8;
+    margin-top: 44px;
 }
 
 .slot.filled {
     border-style: solid;
-    border-color: var(--border-color);
     background: var(--placeholder-bg);
 }
 
@@ -391,13 +399,13 @@ h1,
     font: inherit;
     font-size: 13px;
     line-height: 1;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     display: grid;
     place-items: center;
     border: none;
     border-radius: 50%;
-    background: rgba(255, 251, 240, 0.9);
+    background: rgba(255, 251, 240, 0.92);
     color: var(--text-color);
     cursor: pointer;
 }
@@ -410,34 +418,43 @@ h1,
     margin-left: auto;
 }
 
-@media (max-width: 1100px) {
-    .layout {
+@media (max-width: 1200px) {
+    body {
+        padding: 24px 24px 0 24px;
+    }
+
+    .admin-grid {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
 
     .sidebar {
+        grid-column: 1;
         position: static;
         height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
-        padding: 24px;
+    }
+
+    .rows {
+        grid-column: 1;
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        padding-top: 1.5rem;
     }
 
     .row {
         grid-template-columns: 110px minmax(0, 1fr);
-        padding: 24px;
-        gap: 14px;
+        gap: 1.5rem;
     }
 
-    .gallery {
+    .row > .description,
+    .row > .gallery {
         grid-column: 1 / -1;
-        border-left: none;
-        padding-left: 0;
-        border-top: 1px solid var(--border-color);
-        padding-top: 16px;
+        margin-top: 0;
     }
 
-    .row > .description {
-        grid-column: 1 / -1;
+    .preview-slot.slot {
+        margin-top: 0;
     }
 }

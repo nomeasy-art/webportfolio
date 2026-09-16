@@ -19,7 +19,7 @@
     <section class="login" id="login">
         <form class="login-box" id="login-form">
             <h1>design gallery</h1>
-            <p class="login-label">DASHBOARD</p>
+            <div class="info-row">DASHBOARD</div>
             <input type="password" id="login-password" placeholder="PASSWORD" autocomplete="current-password"
                 required />
             <button type="submit" class="button">ENTRA</button>
@@ -27,9 +27,9 @@
         </form>
     </section>
 
-    <!-- Dashboard -->
-    <main class="layout" id="dashboard" hidden>
-        <aside class="sidebar">
+    <!-- Dashboard: stessa griglia a 5 colonne del sito -->
+    <main class="admin-grid" id="dashboard" hidden>
+        <aside class="sidebar column">
             <header class="logo-header">
                 <h1>design gallery</h1>
             </header>
@@ -41,7 +41,7 @@
             </div>
 
             <button type="button" class="button save-button" id="save">SALVA MODIFICHE</button>
-            <p class="save-state" id="save-state"></p>
+            <div class="save-state" id="save-state"></div>
 
             <footer class="sidebar-footer">
                 <div class="social-icons">
@@ -53,8 +53,8 @@
             </footer>
         </aside>
 
-        <section class="rows" id="rows">
-            <p class="loading" id="loading">Carico i progetti…</p>
+        <section class="rows column" id="rows">
+            <div class="loading" id="loading">CARICO I PROGETTI…</div>
         </section>
     </main>
 

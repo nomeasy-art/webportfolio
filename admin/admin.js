@@ -146,10 +146,25 @@ function urlVisibile(media) {
 
 // ------------------------------------------------------------- interfaccia
 
+function adattaAltezza(area) {
+    area.style.height = 'auto';
+    area.style.height = area.scrollHeight + 'px';
+}
+
+// Va rifatto quando i font sono pronti: misurare prima darebbe altezze
+// sbagliate (calcolate con il carattere di ripiego) e testi tagliati.
+function adattaDescrizioni() {
+    document.querySelectorAll('.description').forEach(adattaAltezza);
+}
+
 function render() {
     elementi.rows.innerHTML = '';
     elementi.rows.appendChild(creaRiga(nuovo, true));
     progetti.forEach(p => elementi.rows.appendChild(creaRiga(p, false)));
+    adattaDescrizioni();
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(adattaDescrizioni);
+    }
 }
 
 function creaRiga(progetto, isNuovo) {
@@ -162,7 +177,6 @@ function creaRiga(progetto, isNuovo) {
         .join('');
 
     riga.innerHTML = `
-        <p class="row-hint">Nuovo progetto</p>
         <button type="button" class="slot preview-slot" data-ruolo="preview"></button>
         <div>
             <div class="col-title"><select class="category-select">${opzioni}</select></div>
@@ -172,7 +186,7 @@ function creaRiga(progetto, isNuovo) {
         </div>
         <div>
             <div class="col-title">descrizione</div>
-            <textarea class="description" placeholder="Descrizione del progetto (inglese, riga vuota, italiano)"></textarea>
+            <textarea class="description" placeholder="DESCRIZIONE"></textarea>
         </div>
         <div class="gallery"></div>
     `;
@@ -188,9 +202,11 @@ function creaRiga(progetto, isNuovo) {
             progetto.modificato = true;
         });
     });
+    // La descrizione cresce con il testo: niente blocchi tagliati a metà.
     riga.querySelector('.description').addEventListener('input', e => {
         progetto.dati.description = e.target.value;
         progetto.modificato = true;
+        adattaAltezza(e.target);
     });
     riga.querySelector('.category-select').addEventListener('change', e => {
         progetto.dati.category = e.target.value;
