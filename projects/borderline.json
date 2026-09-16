@@ -3,22 +3,12 @@
   "slug": "borderline",
   "collaborator": "ROME UNIVERSITY OF FINE ARTS",
   "year": "W/ Frank D'Acunto, Marco Izzo",
-  "description": "Borderline is an editorial project investigating El Salvador’s CECOT maximum-security prison, blending journalistic research with visual experimentation. A dynamic modular layout balances informative rigour and visual impact, turning reading into an immersive experience that strengthens the project’s narrative voice.\n\nBorderline è un progetto editoriale che indaga il carcere di massima sicurezza CECOT, in El Salvador, intrecciando ricerca giornalistica e sperimentazione visiva. Un layout modulare dinamico alterna rigore informativo e impatto visivo, trasformando la lettura in un’esperienza immersiva.",
+  "description": "Borderline is an editorial project that investigates the maximum security prison CECOT, in El Salvador, intertwining journalistic research and visual experimentation. A dynamic modular layout alternates informative rigor and visual impact, transforming reading into an immersive experience.\n\nBorderline è un progetto editoriale che indaga il carcere di massima sicurezza CECOT, in El Salvador, intrecciando ricerca giornalistica e sperimentazione visiva. Un layout modulare dinamico alterna rigore informativo e impatto visivo, trasformando la lettura in un’esperienza immersiva.",
   "category": "editorial",
   "mainImageUrl": "images/projects/borderline/c1992f0588bcad5d4c52825c132268eb1f8f7011-1153x1416.webp",
-  "gallery": [
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp"
-  ],
+  "gallery": [],
   "externalLink": "",
   "featured": false,
-  "order": null
+  "order": null,
+  "descriptionIt": "Borderline è un progetto editoriale che indaga il carcere di massima sicurezza CECOT, in El Salvador, intrecciando ricerca giornalistica e sperimentazione visiva. Un layout modulare dinamico alterna rigore informativo e impatto visivo, trasformando la lettura in un’esperienza immersiva."
 }
