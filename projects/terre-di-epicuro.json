@@ -3,20 +3,22 @@
   "slug": "terre-di-epicuro",
   "collaborator": "FEMAR S.R.L",
   "year": "(no collaborators)",
-  "description": "Terre di Epicuro is a label design project developed for Femar, reinterpreting the wine line’s visual identity in a contemporary key. Refined typography, clear hierarchy and essential graphic details create a clean, distinctive system that strengthens the brand’s positioning.\n\nTerre di Epicuro è un progetto di label design sviluppato per Femar, che reinterpreta l’identità visiva della linea vini in chiave contemporanea. Tipografia raffinata, gerarchia chiara e dettagli grafici essenziali creano un sistema pulito e distintivo che rafforza il posizionamento.",
+  "description": "Terre di Epicuro is a label design project developed for Femar, which reinterprets the visual identity of the wine line in a contemporary key. Refined typography, clear hierarchy and essential graphic details create a clean and distinctive system that strengthens positioning.\n\nTerre di Epicuro è un progetto di label design sviluppato per Femar, che reinterpreta l’identità visiva della linea vini in chiave contemporanea. Tipografia raffinata, gerarchia chiara e dettagli grafici essenziali creano un sistema pulito e distintivo che rafforza il posizionamento.",
   "category": "packaging",
   "mainImageUrl": "images/projects/terre-di-epicuro/d95b1da220586af89121a6f1fd5c17cec9dc1724-520x652.webp",
   "gallery": [
-    "images/projects/terre-di-epicuro/311bfe195e76f5cb9b19040c3de764f86cbd218d-1842x1191.webp",
-    "images/projects/terre-di-epicuro/5f0a1bc2bb0552e7f1185a29395061cc70d40b34-1448x1086.webp",
-    "images/projects/terre-di-epicuro/5f8e9f318bd1bfa922322dde1ec3147abb20e7a4-1574x1079.webp",
-    "images/projects/terre-di-epicuro/181a64bd5a5d5da172e0eb9e5a48d60e40155838-1574x1080.webp",
-    "images/projects/Slide 16_9 - 12.webp",
+    "/images/projects/terre-di-epicuro/311bfe195e76f5cb9b19040c3de764f86cbd218d-1842x1191.webp",
+    "/images/projects/terre-di-epicuro/5f0a1bc2bb0552e7f1185a29395061cc70d40b34-1448x1086.webp",
+    "/images/projects/terre-di-epicuro/5f8e9f318bd1bfa922322dde1ec3147abb20e7a4-1574x1079.webp",
+    "/images/projects/terre-di-epicuro/181a64bd5a5d5da172e0eb9e5a48d60e40155838-1574x1080.webp",
+    "/images/projects/Slide 16_9 - 12.webp",
     "/images/projects/terre-di-epicuro/Slide 16_9 - 14.mp4",
-    "images/projects/terre-di-epicuro/0217fbf1e90265073b25f203a4abe6e6f472e7c9-1842x1191.webp",
-    "images/projects/terre-di-epicuro/1e2f75cc0271a4bcc28fd276c12f5e794401dae6-1448x1086.webp"
+    "/images/projects/terre-di-epicuro/0217fbf1e90265073b25f203a4abe6e6f472e7c9-1842x1191.webp",
+    "/images/projects/terre-di-epicuro/1e2f75cc0271a4bcc28fd276c12f5e794401dae6-1448x1086.webp"
   ],
   "externalLink": "",
   "featured": false,
-  "order": null
+  "order": null,
+  "active": false,
+  "descriptionIt": "Terre di Epicuro è un progetto di label design sviluppato per Femar, che reinterpreta l’identità visiva della linea vini in chiave contemporanea. Tipografia raffinata, gerarchia chiara e dettagli grafici essenziali creano un sistema pulito e distintivo che rafforza il posizionamento."
 }
