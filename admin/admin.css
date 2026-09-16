@@ -1,0 +1,443 @@
+:root {
+    --bg-color: #fffbf0;
+    --text-color: #1A1A1A;
+    --text-muted-color: #4A4A4A;
+    --border-color: #E2DEC9;
+    --placeholder-bg: #EAE7D9;
+    --slot-height: 128px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Senza questo, il display dichiarato più sotto vincerebbe sull'attributo
+   hidden e le due schermate resterebbero visibili insieme. */
+[hidden] {
+    display: none !important;
+}
+
+body {
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Chivo Mono', monospace;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+.col-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-color);
+}
+
+/* --- Accesso --- */
+.login {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+.login-box {
+    width: min(340px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.login-box h1 {
+    font-size: 21px;
+}
+
+.login-label,
+.info-row {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: -0.4px;
+    color: var(--text-muted-color);
+}
+
+.login-box input {
+    font: inherit;
+    font-size: 12px;
+    letter-spacing: -0.4px;
+    text-transform: uppercase;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-color);
+}
+
+.login-box input:focus {
+    outline: none;
+    border-color: var(--text-color);
+}
+
+.login-error {
+    font-size: 12px;
+    color: #a33;
+}
+
+.button {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--text-color);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.button:hover {
+    background: var(--text-color);
+    color: var(--bg-color);
+}
+
+.button[disabled] {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.button[disabled]:hover {
+    background: transparent;
+    color: var(--text-color);
+}
+
+/* --- Impianto generale --- */
+.layout {
+    display: grid;
+    grid-template-columns: 282px minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: 40px 24px 30px 45px;
+    border-right: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.logo-header h1 {
+    font-size: 21px;
+    margin-bottom: 20px;
+}
+
+.details-section {
+    margin-bottom: 24px;
+}
+
+.info-row {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.save-button {
+    width: 100%;
+}
+
+.save-state {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+    color: var(--text-muted-color);
+    margin-top: 10px;
+    min-height: 1.2em;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.social-icon {
+    height: 16px;
+    width: auto;
+}
+
+.logout {
+    font: inherit;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+    background: none;
+    border: none;
+    color: var(--text-muted-color);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* --- Righe progetto --- */
+.rows {
+    padding: 0;
+}
+
+.loading {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--text-muted-color);
+    padding: 40px 45px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 110px 235px minmax(220px, 300px) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+    padding: 36px 0 36px 45px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.row.is-new .row-hint {
+    display: block;
+}
+
+.row-hint {
+    display: none;
+    grid-column: 2 / -1;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+    color: var(--text-muted-color);
+    margin-bottom: -8px;
+}
+
+/* Riquadro preview del progetto */
+.preview-slot {
+    width: 110px;
+    aspect-ratio: 0.8;
+}
+
+/* Colonna centrale */
+.col-title {
+    font-size: 19px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.category-select {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 19px;
+    letter-spacing: -0.02em;
+    color: var(--text-color);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    appearance: none;
+}
+
+.category-select:focus {
+    outline: none;
+}
+
+.field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.field svg {
+    flex: 0 0 auto;
+    opacity: 0.55;
+}
+
+.field input {
+    font: inherit;
+    font-size: 12px;
+    letter-spacing: -0.4px;
+    text-transform: uppercase;
+    color: var(--text-muted-color);
+    background: transparent;
+    border: none;
+    width: 100%;
+}
+
+.field input::placeholder {
+    color: var(--text-muted-color);
+    opacity: 0.75;
+}
+
+.field input:focus {
+    outline: none;
+    color: var(--text-color);
+}
+
+/* Descrizione */
+.description {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-color);
+    background: transparent;
+    border: none;
+    resize: vertical;
+    width: 100%;
+    min-height: 130px;
+}
+
+.description:focus {
+    outline: none;
+}
+
+/* Galleria */
+.gallery {
+    border-left: 1px solid var(--border-color);
+    padding-left: 24px;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+}
+
+.slot {
+    position: relative;
+    height: var(--slot-height);
+    flex: 0 0 auto;
+    background: transparent;
+    border: 1px dashed var(--border-color);
+    cursor: pointer;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    padding: 0;
+}
+
+.slot.horizontal {
+    width: calc(var(--slot-height) * 1.6);
+}
+
+.slot.vertical {
+    width: calc(var(--slot-height) * 0.8);
+}
+
+.preview-slot.slot {
+    height: auto;
+    width: 110px;
+}
+
+.slot .placeholder-icon {
+    opacity: 0.5;
+}
+
+.slot.filled {
+    border-style: solid;
+    border-color: var(--border-color);
+    background: var(--placeholder-bg);
+}
+
+.slot.filled .placeholder-icon {
+    display: none;
+}
+
+.slot img,
+.slot video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    /* Il ritaglio segue lo slot: l'orientamento della posizione ha la
+       precedenza su quello originale della foto. */
+    object-fit: cover;
+    display: block;
+}
+
+/* Frecce di spostamento sovrapposte alla foto */
+.slot-actions {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    gap: 4px;
+}
+
+.slot.filled:hover .slot-actions {
+    display: flex;
+}
+
+.slot-actions button {
+    font: inherit;
+    font-size: 13px;
+    line-height: 1;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 251, 240, 0.9);
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.slot-actions button:hover {
+    background: var(--bg-color);
+}
+
+.slot-actions .remove {
+    margin-left: auto;
+}
+
+@media (max-width: 1100px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 24px;
+    }
+
+    .row {
+        grid-template-columns: 110px minmax(0, 1fr);
+        padding: 24px;
+        gap: 14px;
+    }
+
+    .gallery {
+        grid-column: 1 / -1;
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid var(--border-color);
+        padding-top: 16px;
+    }
+
+    .row > .description {
+        grid-column: 1 / -1;
+    }
+}

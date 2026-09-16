@@ -1,14 +1,66 @@
 <!doctype html>
 <html lang="it">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>NOMEASY — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@300&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="admin.css" />
     <link rel="icon" href="../favicon.svg" />
 </head>
+
 <body>
-    <!-- Sveltia CMS: dashboard che gira nel browser e committa direttamente su GitHub.
-         Nessun server intermedio = nessun limite di upload oltre quello di GitHub (~100MB a file). -->
-    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
+    <!-- Schermata di accesso -->
+    <section class="login" id="login" hidden>
+        <form class="login-box" id="login-form">
+            <h1>design gallery</h1>
+            <p class="login-label">DASHBOARD</p>
+            <input type="password" id="login-password" placeholder="PASSWORD" autocomplete="current-password"
+                required />
+            <button type="submit" class="button">ENTRA</button>
+            <p class="login-error" id="login-error" hidden></p>
+        </form>
+    </section>
+
+    <!-- Dashboard -->
+    <main class="layout" id="dashboard" hidden>
+        <aside class="sidebar">
+            <header class="logo-header">
+                <h1>design gallery</h1>
+            </header>
+
+            <div class="details-section">
+                <div class="info-row">VINCENZO FUCCIA</div>
+                <div class="info-row">NOMEASY@GMAIL.COM</div>
+                <div class="info-row">©2026 ALL RIGHTS RESERVED.</div>
+            </div>
+
+            <button type="button" class="button save-button" id="save">SALVA MODIFICHE</button>
+            <p class="save-state" id="save-state"></p>
+
+            <footer class="sidebar-footer">
+                <div class="social-icons">
+                    <img src="../Instagram.svg" alt="Instagram" class="social-icon">
+                    <img src="../TikTok.svg" alt="TikTok" class="social-icon">
+                    <img src="../Linkedin.svg" alt="Linkedin" class="social-icon">
+                </div>
+                <button type="button" class="logout" id="logout">ESCI</button>
+            </footer>
+        </aside>
+
+        <section class="rows" id="rows">
+            <p class="loading" id="loading">Carico i progetti…</p>
+        </section>
+    </main>
+
+    <!-- Selettore file: uno solo, riusato sia per la preview sia per la galleria -->
+    <input type="file" id="file-input" accept="image/*,video/mp4,video/webm" multiple hidden />
+
+    <script type="module" src="admin.js"></script>
 </body>
+
 </html>
