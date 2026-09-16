@@ -616,11 +616,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sidebarEl = document.querySelector('.sidebar');
     const closeBtns = document.querySelectorAll('.close-detail, .close-detail-mobile');
 
-    // Id dei timeout della chiusura: vanno annullati se l'utente riapre un
+    // Id del timeout di fine chiusura: va annullato se l'utente riapre un
     // progetto mentre l'animazione di chiusura è ancora in corso, altrimenti
-    // allo scadere spegnerebbero la vista appena aperta (schermata vuota).
+    // allo scadere spegnerebbe la vista appena aperta (schermata vuota).
     let closeTimeoutId = null;
-    let dropTimeoutId = null;
 
     placeholders.forEach(placeholder => {
         placeholder.addEventListener('click', () => {
@@ -631,10 +630,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (closeTimeoutId) {
                 clearTimeout(closeTimeoutId);
                 closeTimeoutId = null;
-            }
-            if (dropTimeoutId) {
-                clearTimeout(dropTimeoutId);
-                dropTimeoutId = null;
             }
             if (document.body.classList.contains('detail-closing')) {
                 document.body.classList.remove('detail-closing');
@@ -647,18 +642,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     detailView.style.animation = '';
                 }
             }
-
-            // Stato di partenza pulito: se una chiusura era in corso, i suoi
-            // timeout sono appena stati annullati e il ripristino delle colonne
-            // non avverrà più da solo. Lo facciamo qui, così l'apertura parte
-            // sempre dalla stessa condizione, qualunque fosse quella precedente.
-            allCols.forEach(c => {
-                c.classList.remove('hidden-column', 'active-column');
-                c.style.transform = '';
-                const stale = c.querySelector('.active-project-info');
-                if (stale) stale.remove();
-            });
-            if (sidebarEl) sidebarEl.classList.remove('hidden-column');
 
             // Calcola di quante posizioni deve spostarsi a sinistra
             const colIndex = allColumnsIncludingSidebar.indexOf(col);
@@ -770,43 +753,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Aggiungi la classe di chiusura per innescare l'animazione di uscita
                 document.body.classList.add('detail-closing');
 
-                // Il blocco info sparisce subito: senza, verrebbe trascinato
-                // sopra le altre colonne mentre la colonna torna al suo posto.
+                // Ripristina tutte le colonne alla loro posizione originale
                 allCols.forEach(c => {
+                    c.classList.remove('hidden-column');
+                    c.classList.remove('active-column');
+                    c.style.transform = ''; // Annulla il translateX
+
+                    // Rimuovi il blocco info
                     const oldInfo = c.querySelector('.active-project-info');
                     if (oldInfo) {
-                        oldInfo.style.animation = 'fadeOut 0.25s ease forwards';
-                        setTimeout(() => oldInfo.remove(), 250);
+                        oldInfo.style.animation = 'fadeOut 0.3s ease forwards';
+                        setTimeout(() => oldInfo.remove(), 300);
                     }
                 });
 
-                // Riporta tutte le colonne (e la sidebar) alla posizione originale:
-                // risalgono insieme dal basso.
-                const restoreColumns = () => {
-                    allCols.forEach(c => {
-                        c.classList.remove('hidden-column');
-                        c.classList.remove('active-column');
-                        c.style.transform = ''; // Annulla il translateX
-                    });
-                    if (sidebarEl) {
-                        sidebarEl.classList.remove('hidden-column');
-                    }
-                };
-
-                // Su desktop la chiusura è in due tempi, per evitare che la colonna
-                // attiva attraversi le altre sovrapponendosi ad esse: prima scende
-                // anche lei (le altre sono già giù), poi risalgono tutte insieme.
-                // Su mobile il layout è a flusso verticale e non c'è sovrapposizione:
-                // si ripristina subito, come prima.
-                const DROP_MS = 420;
-                if (window.innerWidth > 768) {
-                    if (activeCol) activeCol.classList.add('hidden-column');
-                    dropTimeoutId = setTimeout(() => {
-                        dropTimeoutId = null;
-                        restoreColumns();
-                    }, DROP_MS);
-                } else {
-                    restoreColumns();
+                // Ripristina la sidebar (Design Gallery)
+                if (sidebarEl) {
+                    sidebarEl.classList.remove('hidden-column');
                 }
 
                 // Ripristina lo scroll su mobile allineando la colonna sincronicamente per evitare flash visivi
@@ -817,8 +780,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     window.scrollTo(0, targetScroll);
                 }
 
-                // Aspetta che l'animazione di uscita (0.8s) sia completata,
-                // tenendo conto dell'eventuale fase di discesa iniziale.
+                // Aspetta che l'animazione di uscita (0.8s) sia completata.
                 // Salviamo l'id per poterla annullare se l'utente riapre
                 // un progetto prima che la chiusura sia terminata.
                 if (closeTimeoutId) clearTimeout(closeTimeoutId);
@@ -836,7 +798,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             detailScroll.smoothScrollInstance.reset();
                         }
                     }
-                }, (window.innerWidth > 768 ? DROP_MS : 0) + 800);
+                }, 800);
             });
         });
     }
