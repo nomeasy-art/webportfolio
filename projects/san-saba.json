@@ -3,18 +3,12 @@
   "slug": "san-saba",
   "collaborator": "Roma Capitale",
   "year": "w/ Marco izzo",
-  "description": "San Saba is a city identity project celebrating the culture and history of Rome’s San Saba district. A modular system inspired by local mosaics adapts across signage and communication materials, blending memory and innovation into a recognisable contemporary visual language.\n\nSan Saba è un progetto di city identity che valorizza cultura e storia dell’omonimo quartiere romano. Un sistema modulare ispirato ai mosaici locali si adatta a segnaletica e materiali di comunicazione, unendo memoria e innovazione in un linguaggio contemporaneo.",
+  "description": "San Saba is a city identity project that enhances the culture and history of the Roman district of the same name. A modular system inspired by local mosaics adapts to signage and communication materials, combining memory and innovation in a contemporary language.\n\nSan Saba è un progetto di city identity che valorizza cultura e storia dell’omonimo quartiere romano. Un sistema modulare ispirato ai mosaici locali si adatta a segnaletica e materiali di comunicazione, unendo memoria e innovazione in un linguaggio contemporaneo.",
   "category": "user-interface",
-  "mainImageUrl": "/images/projects/san-saba/b70d4467cf8f2f0d2576d787986dff4bd231729c-1438x983.webp",
-  "gallery": [
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp"
-  ],
+  "mainImageUrl": "images/projects/san-saba/b70d4467cf8f2f0d2576d787986dff4bd231729c-1438x983.webp",
+  "gallery": [],
   "externalLink": "",
   "featured": false,
-  "order": null
+  "order": null,
+  "descriptionIt": "San Saba è un progetto di city identity che valorizza cultura e storia dell’omonimo quartiere romano. Un sistema modulare ispirato ai mosaici locali si adatta a segnaletica e materiali di comunicazione, unendo memoria e innovazione in un linguaggio contemporaneo."
 }

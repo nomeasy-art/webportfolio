@@ -1,21 +1,15 @@
 {
   "title": "BOOK COVER UNKNOWN",
-  "slug": "Just for fun",
+  "slug": "just-for-fun",
   "collaborator": "JUST FOR FUN SRL",
   "year": "(NO COLLABORATORS)",
-  "description": "Just for fun",
+  "description": "Just for fun”.\n\nJust for fun",
   "category": "book-cover",
   "tags": [],
-  "mainImageUrl": "/images/projects/5 - Visual doppia pagina-1.webp",
-  "gallery": [
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp",
-    "/images/projects/5 - Visual doppia pagina-1.webp"
-  ],
+  "mainImageUrl": "",
+  "gallery": [],
   "externalLink": "",
   "featured": false,
-  "order": null
+  "order": null,
+  "descriptionIt": "Just for fun"
 }
