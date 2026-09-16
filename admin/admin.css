@@ -250,7 +250,7 @@ h1 {
        / 356px azioni. Il rientro della galleria produce il suo stacco da 88px. */
     grid-template-columns: minmax(0, 717px) minmax(0, 1fr) var(--control-column);
     gap: 2rem;
-    align-items: start;
+    align-items: stretch;
     padding-bottom: 2.25rem;
     margin-bottom: 2.25rem;
     border-bottom: 1px solid var(--border-color);
@@ -264,7 +264,6 @@ h1 {
    all'anteprima, la descrizione cade esattamente sotto entrambi. */
 .project-editor {
     min-width: 0;
-    height: calc((3 * var(--slot-height)) + (2 * var(--gallery-gap)));
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -274,7 +273,20 @@ h1 {
     display: grid;
     grid-template-columns: 200px minmax(0, 1fr);
     gap: 2rem;
-    align-items: start;
+    align-items: stretch;
+}
+
+/* Il titolo assorbe lo spazio in eccesso, così l'ultima delle tre righe
+   cade esattamente sul bordo basso dell'anteprima. */
+.row-fields {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.row-fields .col-title {
+    flex: 1;
+    margin-bottom: 0;
 }
 
 .row-description {
@@ -385,17 +397,30 @@ h1 {
    I primi due sono larghi, gli ultimi due stretti: è il ritmo della reference. */
 .gallery {
     display: grid;
-    grid-template-columns: 2fr 2fr 1fr 1fr;
-    grid-template-rows: repeat(3, var(--slot-height));
+    /* Larghezze in rapporto 1.6 : 1.6 : 0.8 : 0.8. Con questi rapporti le
+       due forme risultano alte uguali da sole (w/1.6 = (w/2)/0.8), quindi
+       le righe non vanno fissate: le detta l'aspect-ratio degli slot. */
+    grid-template-columns: 1.6fr 1.6fr 0.8fr 0.8fr;
     gap: var(--gallery-gap);
+    align-content: start;
     min-width: 0;
     margin-left: 3.5rem;
+}
+
+/* Prime due colonne orizzontali, ultime due verticali: stesso schema del sito. */
+.gallery .slot:nth-child(4n+1),
+.gallery .slot:nth-child(4n+2) {
+    aspect-ratio: 1.6;
+}
+
+.gallery .slot:nth-child(4n+3),
+.gallery .slot:nth-child(4n+4) {
+    aspect-ratio: 0.8;
 }
 
 .slot {
     position: relative;
     width: 100%;
-    height: 100%;
     background: transparent;
     border: 1px dashed var(--border-color);
     cursor: pointer;
@@ -416,7 +441,8 @@ h1 {
 /* L'anteprima è volutamente più alta delle tre righe dati, come nel layout. */
 .preview-slot.slot {
     width: 200px;
-    height: 242px;
+    height: auto;
+    aspect-ratio: 0.8;
 }
 
 .slot.filled {
@@ -526,7 +552,7 @@ h1 {
 .hold-delete {
     border: 1px solid var(--text-color);
     color: var(--text-color);
-    --hold-progress: 0;
+    background: var(--bg-color);
 }
 
 .hold-delete::before {
@@ -535,9 +561,22 @@ h1 {
     z-index: -1;
     inset: 0;
     background: #000;
-    transform: scaleY(var(--hold-progress));
+    transform: scaleY(0);
     transform-origin: bottom;
     will-change: transform;
+    /* Rilascio: il liquido rientra in fretta */
+    transition: transform 0.18s ease-out;
+}
+
+/* Pressione: il nero sale dal basso e in 2,6s riempie il tasto */
+.hold-delete.is-holding::before {
+    transform: scaleY(1);
+    transition: transform 2.6s linear;
+}
+
+.hold-delete.is-complete::before {
+    transform: scaleY(1);
+    transition: none;
 }
 
 .hold-delete.is-holding,
@@ -545,9 +584,10 @@ h1 {
     outline: none;
 }
 
-.hold-delete.is-holding,
-.hold-delete.is-complete {
-    color: var(--bg-color);
+.hold-delete span {
+    position: relative;
+    color: #fff;
+    mix-blend-mode: difference;
 }
 
 .hold-delete:focus-visible {
@@ -570,7 +610,6 @@ h1 {
 
     .preview-slot.slot {
         width: 160px;
-        height: 202px;
     }
 
     .gallery {
@@ -620,7 +659,6 @@ h1 {
 
     .preview-slot.slot {
         width: 100px;
-        height: 121px;
     }
 
     .row-description {
@@ -637,7 +675,6 @@ h1 {
     }
 
     .gallery {
-        grid-template-rows: repeat(3, var(--slot-height));
         margin-left: 1.75rem;
     }
 

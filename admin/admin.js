@@ -194,7 +194,7 @@ function creaRiga(progetto, isNuovo) {
                 <button type="button" class="visibility-choice" data-active="true">ATTIVO</button>
                 <button type="button" class="visibility-choice" data-active="false">DISATTIVO</button>
             </div>
-            ${isNuovo ? '' : '<button type="button" class="hold-delete" aria-label="Tieni premuto per eliminare il progetto"><span>ELIMINA</span></button>'}
+            <button type="button" class="hold-delete" aria-label="Tieni premuto per eliminare il progetto"><span>ELIMINA</span></button>
         </div>
     `;
 
@@ -266,42 +266,34 @@ function aggiornaVisibilita(riga, progetto) {
 }
 
 function attivaEliminazione(bottone, progetto) {
-    const DURATA_ELIMINAZIONE = 2600;
-    let inizio = 0;
-    let frame = 0;
+    // Il riempimento lo disegna il CSS (2,6s); qui serve solo il timer che
+    // decide quando la corsa è arrivata in fondo.
+    const DURATA = 2600;
+    let timer = 0;
     let eliminato = false;
 
     const annulla = () => {
-        cancelAnimationFrame(frame);
-        if (!eliminato) {
-            bottone.style.setProperty('--hold-progress', '0');
-            bottone.classList.remove('is-holding');
-        }
-        inizio = 0;
-    };
-
-    const anima = ora => {
-        const progresso = Math.min(1, (ora - inizio) / DURATA_ELIMINAZIONE);
-        bottone.style.setProperty('--hold-progress', progresso.toFixed(3));
-        if (progresso < 1) {
-            frame = requestAnimationFrame(anima);
-            return;
-        }
-        eliminato = true;
+        if (eliminato) return;
+        clearTimeout(timer);
+        timer = 0;
         bottone.classList.remove('is-holding');
-        bottone.classList.add('is-complete');
-        bottone.disabled = true;
-        eliminaProgetto(progetto);
     };
 
     bottone.addEventListener('pointerdown', e => {
-        if (eliminato || e.button !== 0) return;
+        if (eliminato || e.button !== 0 || timer) return;
         e.preventDefault();
         if (Number.isInteger(e.pointerId)) bottone.setPointerCapture?.(e.pointerId);
-        inizio = performance.now();
         bottone.classList.add('is-holding');
-        frame = requestAnimationFrame(anima);
+        timer = setTimeout(() => {
+            eliminato = true;
+            timer = 0;
+            bottone.classList.remove('is-holding');
+            bottone.classList.add('is-complete');
+            bottone.disabled = true;
+            eliminaProgetto(progetto);
+        }, DURATA);
     });
+
     ['pointerup', 'pointercancel', 'pointerleave', 'lostpointercapture'].forEach(evento =>
         bottone.addEventListener(evento, annulla));
 }
