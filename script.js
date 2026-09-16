@@ -400,15 +400,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Le anteprime sfocate servono già al primo riquadro disegnato.
         const [projectPaths] = await Promise.all([getProjectFiles(), loadLqipPreviews()]);
-        const projects = await Promise.all(
+        const projects = (await Promise.all(
             projectPaths.map(async (path) => {
                 const fileRes = await fetch(path);
                 if (!fileRes.ok) {
-                    throw new Error(`Failed to load project at path: ${path}`);
+                    // La lista fallback può contenere un progetto appena
+                    // eliminato dalla dashboard: ignoro solo quel file.
+                    console.warn(`Project unavailable: ${path}`);
+                    return null;
                 }
                 return await fileRes.json();
             })
-        );
+        )).filter(Boolean);
 
         // Sort projects by order (smaller numbers first, nulls/undefined at the end)
         projects.sort((a, b) => {
@@ -418,6 +421,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         projects.forEach(project => {
+            // Un progetto disattivato resta nel repository e nella dashboard,
+            // ma non viene mai costruito per i visitatori del portfolio.
+            if (project.active === false) return;
             const category = project.category || 'editorial';
             const wrapper = document.getElementById(`${category}-wrapper`);
             if (!wrapper) return;

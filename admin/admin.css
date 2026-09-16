@@ -6,7 +6,8 @@
     --text-muted-color: #4A4A4A;
     --border-color: #E2DEC9;
     --placeholder-bg: #EAE7D9;
-    --slot-height: 130px;
+    --slot-height: 134px;
+    --control-column: 356px;
 }
 
 * {
@@ -26,7 +27,7 @@ body {
     color: var(--text-color);
     font-family: 'Chivo Mono', monospace;
     font-weight: 300;
-    padding: 40px 45px 0 45px;
+    padding: 70px 80px 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -136,8 +137,9 @@ h1 {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 2.5rem;
-    max-width: 1800px;
-    margin: 0 auto;
+    /* L'area operativa termina prima del margine destro, come nella reference. */
+    max-width: 2454px;
+    margin: 0;
     min-height: calc(100vh - 40px);
 }
 
@@ -161,7 +163,7 @@ h1 {
 .rows {
     grid-column: 2 / -1;
     margin-left: -1.25rem;
-    padding-left: 1.25rem;
+    padding-left: 3rem;
     border-left: 1px solid var(--border-color);
 }
 
@@ -224,11 +226,13 @@ h1 {
 
 .row {
     display: grid;
-    grid-template-columns: minmax(0, 385px) minmax(0, 300px) minmax(0, 1fr);
-    gap: 2.5rem;
+    /* Vincolo desktop della reference: 717px dati / 735px galleria visibile
+       / 356px azioni. Il rientro della galleria produce il suo stacco da 88px. */
+    grid-template-columns: minmax(0, 717px) minmax(0, 1fr) var(--control-column);
+    gap: 2rem;
     align-items: start;
-    padding-bottom: 2.5rem;
-    margin-bottom: 2.5rem;
+    padding-bottom: 2.25rem;
+    margin-bottom: 2.25rem;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -236,24 +240,23 @@ h1 {
     border-bottom: none;
 }
 
-/* Anteprima e dati stanno nella stessa griglia: così l'anteprima si allunga
-   da sola dal titolo fino all'ultima delle tre righe, senza misure fisse. */
-.row-identity,
-.row-description,
-.gallery {
-    height: 130px;
+/* Il blocco progetto è una sola colonna continua: i dati stanno accanto
+   all'anteprima, la descrizione cade esattamente sotto entrambi. */
+.project-editor {
+    min-width: 0;
 }
 
 .row-identity {
     display: grid;
-    grid-template-columns: 110px minmax(0, 1fr);
-    gap: 2.5rem;
-    align-items: stretch;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
 }
 
 .row-description {
     display: flex;
     flex-direction: column;
+    margin-top: 1.75rem;
 }
 
 /* line-height 1: il bordo alto del blocco coincide con la parola, così
@@ -268,7 +271,7 @@ h1 {
     color: var(--text-color);
     display: flex;
     align-items: flex-start;
-    margin-bottom: 25px;
+    margin-bottom: 1.45rem;
 }
 
 .category-select {
@@ -333,34 +336,29 @@ h1 {
     border: none;
     resize: none;
     width: 100%;
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
+    min-height: 8rem;
+    overflow: hidden;
 }
 
 .description:focus {
     outline: none;
 }
 
-/* Galleria: scorre dentro la propria colonna, non sfonda la pagina.
-   La linea a sinistra è la stessa divisione di colonna del sito. */
+/* Dodici slot sempre presenti, letti in riga da sinistra a destra.
+   I primi due sono larghi, gli ultimi due stretti: è il ritmo della reference. */
 .gallery {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    overflow-x: auto;
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr 1fr;
+    grid-template-rows: repeat(3, var(--slot-height));
+    gap: 0.5rem;
     min-width: 0;
-    margin-left: -1.25rem;
-    padding-left: 1.25rem;
-    border-left: 1px solid var(--border-color);
-    padding-bottom: 10px;
-    scrollbar-width: thin;
+    margin-left: 3.5rem;
 }
 
 .slot {
     position: relative;
-    height: var(--slot-height);
-    flex: 0 0 auto;
+    width: 100%;
+    height: 100%;
     background: transparent;
     border: 1px dashed var(--border-color);
     cursor: pointer;
@@ -371,20 +369,10 @@ h1 {
     color: var(--text-muted-color);
 }
 
-.slot.horizontal {
-    width: calc(var(--slot-height) * 1.6);
-}
-
-.slot.vertical {
-    width: calc(var(--slot-height) * 0.8);
-}
-
-/* L'anteprima riempie l'altezza della colonna dati: bordo alto sul titolo,
-   bordo basso sull'ultima delle tre righe. */
+/* L'anteprima è volutamente più alta delle tre righe dati, come nel layout. */
 .preview-slot.slot {
-    width: 110px;
-    height: auto;
-    align-self: stretch;
+    width: 200px;
+    height: 242px;
 }
 
 .slot.filled {
@@ -446,9 +434,145 @@ h1 {
     margin-left: auto;
 }
 
-@media (max-width: 1200px) {
+/* --- Stato ed eliminazione --- */
+.project-actions {
+    display: grid;
+    grid-template-rows: 204px 204px;
+    gap: 0.5rem;
+}
+
+.visibility-toggle {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+    padding: 0.35rem;
+    border: 1px solid var(--text-color);
+}
+
+.visibility-choice,
+.hold-delete {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted-color);
+    font: inherit;
+    font-size: 12px;
+    letter-spacing: -0.4px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.visibility-choice {
+    display: grid;
+    place-items: center;
+    transition: color 160ms ease, background-color 160ms ease;
+}
+
+.visibility-choice.is-selected {
+    background: #000;
+    color: var(--bg-color);
+}
+
+.hold-delete {
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
+    --hold-progress: 0;
+}
+
+.hold-delete::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: #000;
+    transform: scaleY(var(--hold-progress));
+    transform-origin: bottom;
+    will-change: transform;
+}
+
+.hold-delete.is-holding,
+.hold-delete:focus-visible {
+    outline: none;
+}
+
+.hold-delete.is-holding,
+.hold-delete.is-complete {
+    color: var(--bg-color);
+}
+
+.hold-delete:focus-visible {
+    outline: 2px solid var(--text-color);
+    outline-offset: 3px;
+}
+
+@media (max-width: 1560px) {
+    :root {
+        --control-column: 230px;
+    }
+
+    .row {
+        grid-template-columns: minmax(410px, 1fr) minmax(390px, 1fr) var(--control-column);
+    }
+
+    .row-identity {
+        grid-template-columns: 160px minmax(0, 1fr);
+    }
+
+    .preview-slot.slot {
+        width: 160px;
+        height: 202px;
+    }
+
+    .gallery {
+        margin-left: 0;
+    }
+
+    .project-actions {
+        grid-template-rows: 156px 156px;
+    }
+}
+
+/* Lo stesso sistema si riduce proporzionalmente sui desktop meno larghi
+   della tavola originale, senza introdurre scorrimento orizzontale. */
+@media (max-width: 2350px) and (min-width: 1561px) {
+    :root {
+        --control-column: 270px;
+    }
+
     body {
-        padding: 24px 24px 0 24px;
+        padding: 56px 80px 0;
+    }
+
+    .admin-grid {
+        max-width: none;
+    }
+
+    .rows {
+        padding-left: 1.25rem;
+    }
+
+    .row {
+        grid-template-columns: minmax(0, 1fr) minmax(440px, 1.025fr) var(--control-column);
+    }
+
+    .gallery {
+        margin-left: 0;
+    }
+
+    .project-actions {
+        grid-template-rows: 156px 156px;
+    }
+
+    .description {
+        min-height: 7.4rem;
+    }
+}
+
+@media (max-width: 1500px) {
+    body {
+        padding: 24px 24px 0;
     }
 
     .admin-grid {
@@ -477,10 +601,14 @@ h1 {
     }
 
     .gallery {
+        grid-template-columns: 2fr 2fr 1fr 1fr;
         margin-left: 0;
-        padding-left: 0;
-        border-left: none;
         border-top: 1px solid var(--border-color);
         padding-top: 1.25rem;
+    }
+
+    .project-actions {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 132px;
     }
 }

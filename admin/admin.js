@@ -42,7 +42,7 @@ function progettoVuoto() {
         dati: {
             title: '', slug: '', collaborator: '', year: '', description: '',
             category: 'editorial', tags: [], mainImageUrl: '', gallery: [],
-            externalLink: '', featured: false, order: null,
+            externalLink: '', featured: false, active: true, order: null,
         },
         media: [],      // galleria: { url, bytes?, lqip?, tipo }
         preview: null,  // { url, bytes?, lqip?, tipo }
@@ -172,20 +172,29 @@ function creaRiga(progetto, isNuovo) {
         .join('');
 
     riga.innerHTML = `
-        <div class="row-identity">
-            <button type="button" class="slot preview-slot" data-ruolo="preview"></button>
-            <div class="row-fields">
-                <div class="col-title"><select class="category-select">${opzioni}</select></div>
-                <label class="field">${icona('campo')}<input data-campo="title" placeholder="NOME PROGETTO" /></label>
-                <label class="field">${icona('campo')}<input data-campo="collaborator" placeholder="CLIENTE PROGETTO" /></label>
-                <label class="field">${icona('campo')}<input data-campo="year" placeholder="W/ COLLABORATORI" /></label>
+        <div class="project-editor">
+            <div class="row-identity">
+                <button type="button" class="slot preview-slot" data-ruolo="preview" aria-label="Carica immagine di copertina"></button>
+                <div class="row-fields">
+                    <div class="col-title"><select class="category-select" aria-label="Categoria progetto">${opzioni}</select></div>
+                    <label class="field">${icona('campo')}<input data-campo="title" placeholder="NOME PROGETTO" /></label>
+                    <label class="field">${icona('campo')}<input data-campo="collaborator" placeholder="CLIENTE PROGETTO" /></label>
+                    <label class="field">${icona('campo')}<input data-campo="year" placeholder="W/ COLLABORATORI" /></label>
+                </div>
+            </div>
+            <div class="row-description">
+                <div class="col-title">Descrizione:</div>
+                <textarea class="description" placeholder="DESCRIZIONE"></textarea>
             </div>
         </div>
-        <div class="row-description">
-            <div class="col-title">descrizione</div>
-            <textarea class="description" placeholder="DESCRIZIONE"></textarea>
-        </div>
         <div class="gallery"></div>
+        <div class="project-actions">
+            <div class="visibility-toggle" role="group" aria-label="Visibilità del progetto">
+                <button type="button" class="visibility-choice" data-active="true">ATTIVO</button>
+                <button type="button" class="visibility-choice" data-active="false">DISATTIVO</button>
+            </div>
+            <button type="button" class="hold-delete" aria-label="Tieni premuto per eliminare il progetto"><span>ELIMINA</span></button>
+        </div>
     `;
 
     riga.querySelector('[data-campo="title"]').value = progetto.dati.title || '';
@@ -209,6 +218,17 @@ function creaRiga(progetto, isNuovo) {
         progetto.modificato = true;
     });
 
+    aggiornaVisibilita(riga, progetto);
+    riga.querySelectorAll('[data-active]').forEach(bottone => {
+        bottone.addEventListener('click', () => {
+            progetto.dati.active = bottone.dataset.active === 'true';
+            progetto.modificato = true;
+            aggiornaVisibilita(riga, progetto);
+        });
+    });
+
+    attivaEliminazione(riga.querySelector('.hold-delete'), progetto);
+
     const preview = riga.querySelector('.preview-slot');
     disegnaSlot(preview, progetto.preview, null, progetto);
     preview.addEventListener('click', () => apriSelettore(progetto, 'preview', 0));
@@ -219,11 +239,12 @@ function creaRiga(progetto, isNuovo) {
 
 function disegnaGalleria(contenitore, progetto) {
     contenitore.innerHTML = '';
-    const totale = Math.max(10, progetto.media.length + 2);
+    const totale = 12;
     for (let i = 0; i < totale; i++) {
         const slot = document.createElement('button');
         slot.type = 'button';
-        slot.className = `slot ${orientamento(i)}`;
+        slot.className = 'slot';
+        slot.setAttribute('aria-label', `Foto progetto ${i + 1}${progetto.media[i] ? '' : ', vuota'}`);
         disegnaSlot(slot, progetto.media[i], i, progetto);
         slot.addEventListener('click', e => {
             if (e.target.closest('.slot-actions')) return;
@@ -231,6 +252,56 @@ function disegnaGalleria(contenitore, progetto) {
         });
         contenitore.appendChild(slot);
     }
+}
+
+function aggiornaVisibilita(riga, progetto) {
+    const attivo = progetto.dati.active !== false;
+    riga.querySelectorAll('[data-active]').forEach(bottone => {
+        const selezionato = (bottone.dataset.active === 'true') === attivo;
+        bottone.classList.toggle('is-selected', selezionato);
+        bottone.setAttribute('aria-pressed', String(selezionato));
+    });
+}
+
+function attivaEliminazione(bottone, progetto) {
+    const DURATA_ELIMINAZIONE = 2600;
+    let inizio = 0;
+    let frame = 0;
+    let eliminato = false;
+
+    const annulla = () => {
+        cancelAnimationFrame(frame);
+        if (!eliminato) {
+            bottone.style.setProperty('--hold-progress', '0');
+            bottone.classList.remove('is-holding');
+        }
+        inizio = 0;
+    };
+
+    const anima = ora => {
+        const progresso = Math.min(1, (ora - inizio) / DURATA_ELIMINAZIONE);
+        bottone.style.setProperty('--hold-progress', progresso.toFixed(3));
+        if (progresso < 1) {
+            frame = requestAnimationFrame(anima);
+            return;
+        }
+        eliminato = true;
+        bottone.classList.remove('is-holding');
+        bottone.classList.add('is-complete');
+        bottone.disabled = true;
+        eliminaProgetto(progetto);
+    };
+
+    bottone.addEventListener('pointerdown', e => {
+        if (eliminato || e.button !== 0) return;
+        e.preventDefault();
+        if (Number.isInteger(e.pointerId)) bottone.setPointerCapture?.(e.pointerId);
+        inizio = performance.now();
+        bottone.classList.add('is-holding');
+        frame = requestAnimationFrame(anima);
+    });
+    ['pointerup', 'pointercancel', 'pointerleave', 'lostpointercapture'].forEach(evento =>
+        bottone.addEventListener(evento, annulla));
 }
 
 function disegnaSlot(slot, media, indice, progetto) {
@@ -301,11 +372,11 @@ elementi.fileInput.addEventListener('change', async () => {
             progetto.preview = lavorati[0];
         } else {
             // Riempie dallo slot cliccato in avanti, uno dopo l'altro.
-            for (let i = 0; i < lavorati.length; i++) {
+            for (let i = 0; i < lavorati.length && indice + i < 12; i++) {
                 progetto.media[indice + i] = lavorati[i];
             }
             // Eventuali buchi (slot saltati) vengono compattati
-            progetto.media = progetto.media.filter(Boolean);
+            progetto.media = progetto.media.filter(Boolean).slice(0, 12);
         }
         progetto.modificato = true;
         render();
@@ -331,6 +402,33 @@ async function chiamata(url, opzioni = {}) {
     const dati = await risposta.json().catch(() => ({}));
     if (!risposta.ok) throw new Error(dati.error || `Errore ${risposta.status}`);
     return dati;
+}
+
+async function eliminaProgetto(progetto) {
+    if (progetto.nuovo) {
+        nuovo = progettoVuoto();
+        render();
+        stato('Bozza eliminata.');
+        return;
+    }
+
+    stato(`Elimino "${progetto.dati.title || 'progetto'}"…`);
+    try {
+        await chiamata('/api/commit', {
+            method: 'POST',
+            body: JSON.stringify({
+                files: [{ path: progetto.path, remove: true }],
+                message: `Dashboard: elimina ${progetto.dati.title || 'progetto'}`,
+            }),
+        });
+        progetti = progetti.filter(p => p !== progetto);
+        render();
+        stato('Progetto eliminato. Il sito si aggiorna in un minuto.');
+    } catch (err) {
+        stato(err.message, true);
+        // Un errore non deve lasciare un pulsante visivamente "riempito".
+        render();
+    }
 }
 
 async function salva() {
@@ -439,7 +537,7 @@ async function caricaProgetti() {
         modificato: false,
         originale: JSON.stringify(p.dati, null, 2) + '\n',
         dati: p.dati,
-        media: (p.dati.gallery || []).map(url => ({
+        media: (p.dati.gallery || []).slice(0, 12).map(url => ({
             url, tipo: isVideo(url) ? 'video' : 'immagine',
         })),
         preview: p.dati.mainImageUrl
