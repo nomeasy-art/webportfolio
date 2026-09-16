@@ -368,6 +368,68 @@ h2 {
     pointer-events: none;
 }
 
+/* --- Caricamento immagini: anteprima sfocata (blur-up) ---
+   I file sono pesanti: al posto del riquadro vuoto si vede subito una
+   miniatura da 16px della foto stessa, ingrandita e sfocata. Quando il
+   file vero è pronto, questo sfuma sopra l'anteprima. */
+.media-box {
+    position: relative;
+    overflow: hidden;
+}
+
+.media-blur {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    /* La scala nasconde i bordi trasparenti creati dalla sfocatura */
+    transform: scale(1.1);
+    filter: blur(12px);
+    transition: opacity 0.5s ease;
+}
+
+/* Immagini senza anteprima (es. appena caricate da dashboard): sfondo neutro
+   che respira, così il riquadro non resta comunque immobile e vuoto. */
+.media-blur-neutral {
+    background: linear-gradient(110deg,
+            var(--placeholder-bg) 0%,
+            #f3efe0 45%,
+            var(--placeholder-bg) 100%);
+    background-size: 220% 100%;
+    animation: mediaShimmer 2.4s ease-in-out infinite;
+}
+
+@keyframes mediaShimmer {
+    0% { background-position: 0% 0; }
+    50% { background-position: 100% 0; }
+    100% { background-position: 0% 0; }
+}
+
+.media-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.media-box.media-loaded .media-blur {
+    opacity: 0;
+}
+
+.media-box.media-loaded .media-media {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .media-blur-neutral {
+        animation: none;
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 1200px) {
 

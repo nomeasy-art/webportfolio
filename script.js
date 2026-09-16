@@ -171,14 +171,80 @@ function isVideoUrl(url) {
     return /\.(mp4|webm)(\?.*)?$/i.test(url || '');
 }
 
+// Anteprime minuscole (16px) usate sfocate mentre il media vero carica.
+// Le genera generate-lqip.py in lqip.json; se manca, si usa uno sfondo neutro.
+let lqipPreviews = {};
+
+async function loadLqipPreviews() {
+    try {
+        const res = await fetch('lqip.json');
+        if (res.ok) lqipPreviews = await res.json();
+    } catch (e) {
+        // Nessuna anteprima: i riquadri useranno lo sfondo neutro.
+    }
+}
+
+function lqipFor(url) {
+    if (!url) return null;
+    const clean = url.split('?')[0].replace(/^\/+/, '');
+    if (lqipPreviews[clean]) return lqipPreviews[clean];
+    try {
+        return lqipPreviews[decodeURIComponent(clean)] || null;
+    } catch (e) {
+        return null;
+    }
+}
+
+// Toglie la sfocatura quando il media è pronto. Lo strato sfocato viene poi
+// rimosso: con decine di riquadri, lasciare attivo il filtro CSS costerebbe.
+function markMediaLoaded(el) {
+    const box = el.closest && el.closest('.media-box');
+    if (!box || box.classList.contains('media-loaded')) return;
+    box.classList.add('media-loaded');
+    setTimeout(() => {
+        const blur = box.querySelector('.media-blur');
+        if (blur) blur.remove();
+    }, 600);
+}
+
+// I cloni (scroll infinito, vista dettaglio) non conservano i listener
+// dell'originale: questi delegati in fase di cattura intercettano anche loro.
+document.addEventListener('load', (e) => {
+    if (e.target instanceof Element && e.target.matches('.media-media')) markMediaLoaded(e.target);
+}, true);
+document.addEventListener('loadeddata', (e) => {
+    if (e.target instanceof Element && e.target.matches('.media-media')) markMediaLoaded(e.target);
+}, true);
+
+// Rete di sicurezza per i media già in cache, che possono non emettere l'evento.
+function syncMediaBoxes(root) {
+    (root || document).querySelectorAll('.media-box:not(.media-loaded)').forEach(box => {
+        const img = box.querySelector('img.media-media');
+        if (img && img.complete && img.naturalWidth > 0) return markMediaLoaded(img);
+        const video = box.querySelector('video.media-media');
+        if (video && video.readyState >= 2) markMediaLoaded(video);
+    });
+}
+
 // Riempie un riquadro con il media giusto: video autoavviante in loop
-// (silenziato, come una GIF) oppure immagine di sfondo come sempre.
+// (silenziato, come una GIF) oppure immagine. Sotto al media resta la sua
+// anteprima sfocata, che sfuma via appena il file pesante è pronto.
 // Gli attributi (oltre alle proprietà) servono perché i cloni via cloneNode
 // conservino muted/autoplay e ripartano da soli una volta inseriti nel DOM.
 function fillMediaBox(box, url) {
     if (!url) return;
+    box.classList.add('media-box');
+
+    const blur = document.createElement('div');
+    blur.className = 'media-blur';
+    const preview = lqipFor(url);
+    if (preview) blur.style.backgroundImage = `url('${preview}')`;
+    else blur.classList.add('media-blur-neutral');
+    box.appendChild(blur);
+
     if (isVideoUrl(url)) {
         const video = document.createElement('video');
+        video.className = 'media-media';
         video.src = url;
         video.muted = true;
         video.autoplay = true;
@@ -191,10 +257,15 @@ function fillMediaBox(box, url) {
         video.setAttribute('preload', 'auto');
         box.appendChild(video);
     } else {
-        box.style.backgroundImage = `url('${url}')`;
-        box.style.backgroundSize = 'cover';
-        box.style.backgroundPosition = 'center';
+        const img = document.createElement('img');
+        img.className = 'media-media';
+        img.alt = '';
+        img.decoding = 'async';
+        img.src = url;
+        box.appendChild(img);
     }
+
+    syncMediaBoxes(box);
 }
 
 // --- UTILITY: GALLERY LAYOUT (orizzontali/verticali a pattern + reveal animato) ---
@@ -323,7 +394,8 @@ async function getProjectFiles() {
 document.addEventListener('DOMContentLoaded', async () => {
     // --- FETCH PROJECTS FROM INDIVIDUAL JSON FILES ---
     try {
-        const projectPaths = await getProjectFiles();
+        // Le anteprime sfocate servono già al primo riquadro disegnato.
+        const [projectPaths] = await Promise.all([getProjectFiles(), loadLqipPreviews()]);
         const projects = await Promise.all(
             projectPaths.map(async (path) => {
                 const fileRes = await fetch(path);
@@ -484,6 +556,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 originalChildren.forEach(child => wrapper.appendChild(child.cloneNode(true)));
             }
         }
+        syncMediaBoxes(wrapper);
 
         // Calcola la dimensione esatta di un set misurando la distanza fisica tra gli elementi
         // Questo evita errori causati dal padding globale del wrapper su mobile!
@@ -700,6 +773,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Clona l'immagine
             const imgClone = placeholder.cloneNode(true);
             projectWrapper.appendChild(imgClone);
+            syncMediaBoxes(projectWrapper);
 
             // Aggiungi la descrizione
             const desc = document.createElement('p');
