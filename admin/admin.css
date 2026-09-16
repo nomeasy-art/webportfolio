@@ -224,7 +224,7 @@ h1 {
 
 .row {
     display: grid;
-    grid-template-columns: 110px minmax(0, 235px) minmax(0, 300px) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 385px) minmax(0, 300px) minmax(0, 1fr);
     gap: 2.5rem;
     align-items: start;
     padding-bottom: 2.5rem;
@@ -236,16 +236,28 @@ h1 {
     border-bottom: none;
 }
 
+/* Anteprima e dati stanno nella stessa griglia: così l'anteprima si allunga
+   da sola dal titolo fino all'ultima delle tre righe, senza misure fisse. */
+.row-identity {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: stretch;
+}
+
+/* line-height 1: il bordo alto del blocco coincide con la parola, così
+   l'anteprima parte esattamente dal titolo. I 44px complessivi (20 + 24)
+   sono lo stesso passo del sito (intestazione 36 + 8). */
 .col-title {
     font-family: 'Inter', sans-serif;
     font-size: 20px;
     font-weight: 600;
+    line-height: 1;
     letter-spacing: -0.02em;
     color: var(--text-color);
     display: flex;
-    align-items: center;
-    height: 36px;
-    margin-bottom: 8px;
+    align-items: flex-start;
+    margin-bottom: 24px;
 }
 
 .category-select {
@@ -318,13 +330,18 @@ h1 {
     outline: none;
 }
 
-/* Galleria: scorre dentro la propria colonna, non sfonda la pagina */
+/* Galleria: scorre dentro la propria colonna, non sfonda la pagina.
+   La linea a sinistra è la stessa divisione di colonna del sito. */
 .gallery {
     display: flex;
+    align-items: flex-start;
+    align-self: stretch;
     gap: 12px;
     overflow-x: auto;
     min-width: 0;
-    margin-top: 44px;
+    margin-left: -1.25rem;
+    padding-left: 1.25rem;
+    border-left: 1px solid var(--border-color);
     padding-bottom: 10px;
     scrollbar-width: thin;
 }
@@ -351,12 +368,12 @@ h1 {
     width: calc(var(--slot-height) * 0.8);
 }
 
-/* Riquadro della preview: stesse proporzioni della miniatura sul sito */
+/* L'anteprima riempie l'altezza della colonna dati: bordo alto sul titolo,
+   bordo basso sull'ultima delle tre righe. */
 .preview-slot.slot {
     width: 110px;
     height: auto;
-    aspect-ratio: 0.8;
-    margin-top: 44px;
+    align-self: stretch;
 }
 
 .slot.filled {
@@ -444,17 +461,15 @@ h1 {
     }
 
     .row {
-        grid-template-columns: 110px minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr);
         gap: 1.5rem;
     }
 
-    .row > .description,
-    .row > .gallery {
-        grid-column: 1 / -1;
-        margin-top: 0;
-    }
-
-    .preview-slot.slot {
-        margin-top: 0;
+    .gallery {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        padding-top: 1.25rem;
     }
 }

@@ -55,6 +55,16 @@ function orientamento(indice) {
     return resto === 0 || resto === 1 ? 'horizontal' : 'vertical';
 }
 
+// Sul sito la descrizione è "inglese, riga vuota, italiano". In dashboard si
+// vede e si scrive solo l'italiano: l'inglese lo genera il salvataggio.
+function italianoDa(dati) {
+    if (typeof dati.descriptionIt === 'string') return dati.descriptionIt;
+    const intero = dati.description || '';
+    const separatore = intero.search(/\n\s*\n/);
+    if (separatore === -1) return intero;
+    return intero.slice(separatore).replace(/^\s+/, '');
+}
+
 function slugifica(testo) {
     return (testo || '')
         .toLowerCase()
@@ -177,14 +187,16 @@ function creaRiga(progetto, isNuovo) {
         .join('');
 
     riga.innerHTML = `
-        <button type="button" class="slot preview-slot" data-ruolo="preview"></button>
-        <div>
-            <div class="col-title"><select class="category-select">${opzioni}</select></div>
-            <label class="field">${icona('campo')}<input data-campo="title" placeholder="NOME PROGETTO" /></label>
-            <label class="field">${icona('campo')}<input data-campo="collaborator" placeholder="CLIENTE PROGETTO" /></label>
-            <label class="field">${icona('campo')}<input data-campo="year" placeholder="W/ COLLABORATORI" /></label>
+        <div class="row-identity">
+            <button type="button" class="slot preview-slot" data-ruolo="preview"></button>
+            <div class="row-fields">
+                <div class="col-title"><select class="category-select">${opzioni}</select></div>
+                <label class="field">${icona('campo')}<input data-campo="title" placeholder="NOME PROGETTO" /></label>
+                <label class="field">${icona('campo')}<input data-campo="collaborator" placeholder="CLIENTE PROGETTO" /></label>
+                <label class="field">${icona('campo')}<input data-campo="year" placeholder="W/ COLLABORATORI" /></label>
+            </div>
         </div>
-        <div>
+        <div class="row-description">
             <div class="col-title">descrizione</div>
             <textarea class="description" placeholder="DESCRIZIONE"></textarea>
         </div>
@@ -194,7 +206,7 @@ function creaRiga(progetto, isNuovo) {
     riga.querySelector('[data-campo="title"]').value = progetto.dati.title || '';
     riga.querySelector('[data-campo="collaborator"]').value = progetto.dati.collaborator || '';
     riga.querySelector('[data-campo="year"]').value = progetto.dati.year || '';
-    riga.querySelector('.description').value = progetto.dati.description || '';
+    riga.querySelector('.description').value = italianoDa(progetto.dati);
 
     riga.querySelectorAll('[data-campo]').forEach(campo => {
         campo.addEventListener('input', () => {
@@ -204,7 +216,7 @@ function creaRiga(progetto, isNuovo) {
     });
     // La descrizione cresce con il testo: niente blocchi tagliati a metà.
     riga.querySelector('.description').addEventListener('input', e => {
-        progetto.dati.description = e.target.value;
+        progetto.dati.descriptionIt = e.target.value;
         progetto.modificato = true;
         adattaAltezza(e.target);
     });
@@ -349,12 +361,39 @@ async function salva() {
     try {
         const files = [];
         const nuoviMedia = [];
+        const erroriTraduzione = [];
 
         for (const progetto of daSalvare) {
             const slug = slugifica(progetto.dati.slug || progetto.dati.title);
             progetto.dati.slug = slug;
             progetto.dati.gallery = progetto.media.map(m => '/' + chiaveLqip(m.url));
             progetto.dati.mainImageUrl = progetto.preview ? chiaveLqip(progetto.preview.url) : '';
+
+            // Il sito mostra inglese + riga vuota + italiano: l'inglese lo
+            // genera la traduzione automatica dall'italiano scritto qui.
+            const italiano = italianoDa(progetto.dati).trim();
+            progetto.dati.descriptionIt = italiano;
+            if (italiano) {
+                stato(`Traduco "${progetto.dati.title}"…`);
+                try {
+                    const { testo } = await chiamata('/api/translate', {
+                        method: 'POST',
+                        body: JSON.stringify({ testo: italiano }),
+                    });
+                    progetto.dati.description = testo ? `${testo}\n\n${italiano}` : italiano;
+                } catch (err) {
+                    // Meglio salvare il resto che bloccare tutto: si tiene
+                    // l'inglese precedente, se c'era.
+                    const precedente = (progetto.dati.description || '').split(/\n\s*\n/)[0];
+                    const inglesePrecedente = precedente && precedente !== italiano ? precedente : '';
+                    progetto.dati.description = inglesePrecedente
+                        ? `${inglesePrecedente}\n\n${italiano}`
+                        : italiano;
+                    erroriTraduzione.push(progetto.dati.title);
+                }
+            } else {
+                progetto.dati.description = '';
+            }
 
             const testo = JSON.stringify(progetto.dati, null, 2) + '\n';
             // Rete di sicurezza: se il contenuto è identico a com'era, il file
@@ -394,7 +433,9 @@ async function salva() {
             }),
         });
 
-        stato('Salvato. Il sito si aggiorna in un minuto.');
+        stato(erroriTraduzione.length
+            ? `Salvato, ma la traduzione non è riuscita per: ${erroriTraduzione.join(', ')}.`
+            : 'Salvato. Il sito si aggiorna in un minuto.', erroriTraduzione.length > 0);
         nuovo = progettoVuoto();
         await caricaProgetti();
     } catch (err) {
