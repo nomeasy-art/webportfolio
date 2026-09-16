@@ -4,10 +4,15 @@
 // Genera le lamelle dentro l'overlay già presente nell'HTML e le apre subito
 // dopo il primo frame. L'overlay viene poi dissolto e rimosso dal DOM.
 (function setupIntroBlinds() {
+    // Intro momentaneamente sospesa: rimetti a true per riattivare
+    // l'animazione di apertura a tenda veneziana (il resto del codice
+    // e gli stili sono rimasti intatti).
+    const INTRO_ENABLED = false;
+
     const overlay = document.querySelector('.intro-blinds');
     if (!overlay) return;
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (!INTRO_ENABLED || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         overlay.remove();
         return;
     }
