@@ -231,16 +231,20 @@ function syncMediaBoxes(root) {
 // anteprima sfocata, che sfuma via appena il file pesante è pronto.
 // Gli attributi (oltre alle proprietà) servono perché i cloni via cloneNode
 // conservino muted/autoplay e ripartano da soli una volta inseriti nel DOM.
-function fillMediaBox(box, url) {
+function fillMediaBox(box, url, options) {
     if (!url) return;
     box.classList.add('media-box');
 
-    const blur = document.createElement('div');
-    blur.className = 'media-blur';
-    const preview = lqipFor(url);
-    if (preview) blur.style.backgroundImage = `url('${preview}')`;
-    else blur.classList.add('media-blur-neutral');
-    box.appendChild(blur);
+    // L'anteprima sfocata si usa solo nelle gallerie dei progetti: in home
+    // decine di riquadri sfocati insieme sono sgradevoli.
+    if (options && options.blur) {
+        const blur = document.createElement('div');
+        blur.className = 'media-blur';
+        const preview = lqipFor(url);
+        if (preview) blur.style.backgroundImage = `url('${preview}')`;
+        else blur.classList.add('media-blur-neutral');
+        box.appendChild(blur);
+    }
 
     if (isVideoUrl(url)) {
         const video = document.createElement('video');
@@ -272,7 +276,7 @@ function fillMediaBox(box, url) {
 function createGalleryImage(url, extraClass) {
     const div = document.createElement('div');
     div.className = extraClass ? `large-image ${extraClass}` : 'large-image';
-    fillMediaBox(div, url);
+    fillMediaBox(div, url, { blur: true });
     return div;
 }
 
