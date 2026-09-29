@@ -266,6 +266,12 @@ function fillMediaBox(box, url, options) {
         img.alt = '';
         img.decoding = 'async';
         img.src = url;
+        // Inquadratura scelta dalla dashboard (zoom e porzione inquadrata)
+        const framing = options && options.framing;
+        if (framing) {
+            img.style.objectPosition = `${framing.x}% ${framing.y}%`;
+            img.style.transform = `scale(${framing.zoom})`;
+        }
         box.appendChild(img);
     }
 
@@ -273,33 +279,34 @@ function fillMediaBox(box, url, options) {
 }
 
 // --- UTILITY: GALLERY LAYOUT (orizzontali/verticali a pattern + reveal animato) ---
-function createGalleryImage(url, extraClass) {
+function createGalleryImage(url, extraClass, framing) {
     const div = document.createElement('div');
     div.className = extraClass ? `large-image ${extraClass}` : 'large-image';
-    fillMediaBox(div, url, { blur: true });
+    fillMediaBox(div, url, { blur: true, framing });
     return div;
 }
 
 // Pattern (ciclo di 4, 0-indexed): 0,1 = orizzontale — 2,3 = verticale (affiancate).
 // Si adatta automaticamente al numero di immagini realmente disponibili, senza
 // lasciare mai riquadri vuoti se un progetto ne ha meno di 10.
-function buildGallery(urls, container) {
+function buildGallery(urls, container, framings) {
+    const inq = i => (framings || [])[i] || null;
     let i = 0;
     while (i < urls.length) {
         const mod = i % 4;
         if (mod === 2 && i + 1 < urls.length) {
             const pair = document.createElement('div');
             pair.className = 'image-row-pair';
-            pair.appendChild(createGalleryImage(urls[i], 'vertical'));
-            pair.appendChild(createGalleryImage(urls[i + 1], 'vertical'));
+            pair.appendChild(createGalleryImage(urls[i], 'vertical', inq(i)));
+            pair.appendChild(createGalleryImage(urls[i + 1], 'vertical', inq(i + 1)));
             container.appendChild(pair);
             i += 2;
         } else if (mod === 2 || mod === 3) {
             // Verticale orfana (senza compagna disponibile): resa singola, centrata.
-            container.appendChild(createGalleryImage(urls[i], 'vertical solo'));
+            container.appendChild(createGalleryImage(urls[i], 'vertical solo', inq(i)));
             i += 1;
         } else {
-            container.appendChild(createGalleryImage(urls[i], 'horizontal'));
+            container.appendChild(createGalleryImage(urls[i], 'horizontal', inq(i)));
             i += 1;
         }
     }
@@ -434,6 +441,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Store data for detail view
             projectEl.dataset.description = project.description || '';
             projectEl.dataset.gallery = JSON.stringify(project.gallery || []);
+            projectEl.dataset.galleryFraming = JSON.stringify(project.galleryFraming || []);
 
             projectEl.innerHTML = `
                 <div class="info-row top-border">${project.title || 'NOME DEL PROGETTO'}</div>
@@ -441,7 +449,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="info-row">${project.year || ''}</div>
                 <div class="project-image-placeholder"></div>
             `;
-            fillMediaBox(projectEl.querySelector('.project-image-placeholder'), project.mainImageUrl);
+            fillMediaBox(projectEl.querySelector('.project-image-placeholder'), project.mainImageUrl,
+                { framing: project.mainImageFraming });
             wrapper.appendChild(projectEl);
         });
     } catch (err) {
@@ -808,7 +817,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 try {
                     const galleryUrls = JSON.parse(project.dataset.gallery || '[]');
-                    buildGallery(galleryUrls, detailScroll);
+                    const inquadrature = JSON.parse(project.dataset.galleryFraming || '[]');
+                    buildGallery(galleryUrls, detailScroll, inquadrature);
                     setupGalleryReveal(detailScroll);
                 } catch (e) {
                     console.error("Error parsing gallery images", e);

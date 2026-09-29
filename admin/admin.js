@@ -26,7 +26,17 @@ const elementi = {
     saveState: document.getElementById('save-state'),
     logout: document.getElementById('logout'),
     fileInput: document.getElementById('file-input'),
+    editor: document.getElementById('editor'),
+    editorFrame: document.getElementById('editor-frame'),
+    editorImage: document.getElementById('editor-image'),
+    editorZoom: document.getElementById('editor-zoom'),
+    editorReset: document.getElementById('editor-reset'),
+    editorCancel: document.getElementById('editor-cancel'),
+    editorApply: document.getElementById('editor-apply'),
 };
+
+// Editor di inquadratura aperto al momento: { progetto, media, bozza }
+let editorAperto = null;
 
 let progetti = [];      // progetti già sul sito
 let nuovo = progettoVuoto();
@@ -83,6 +93,12 @@ function chiaveLqip(url) {
 }
 
 function icona(nome) {
+    if (nome === 'sostituisci') {
+        return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9
+            c-2.5 0-4.8-1-6.4-2.7"/><path d="M3 12a9 9 0 0 1 9-9c2.5 0 4.8 1 6.4 2.7"/>
+            <polyline points="18.4 1.6 18.4 5.7 14.3 5.7"/><polyline points="5.6 22.4 5.6 18.3 9.7 18.3"/></svg>`;
+    }
     if (nome === 'campo') {
         return `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -144,6 +160,13 @@ function base64Da(blob) {
         lettore.onerror = ko;
         lettore.readAsDataURL(blob);
     });
+}
+
+// Inquadratura: stesso CSS usato dal sito, così l'anteprima è fedele.
+function stileInquadratura(media) {
+    const f = media && media.framing;
+    if (!f) return '';
+    return `object-position:${f.x}% ${f.y}%;transform:scale(${f.zoom});`;
 }
 
 function urlVisibile(media) {
@@ -233,7 +256,11 @@ function creaRiga(progetto, isNuovo) {
 
     const preview = riga.querySelector('.preview-slot');
     disegnaSlot(preview, progetto.preview, null, progetto);
-    preview.addEventListener('click', () => apriSelettore(progetto, 'preview', 0));
+    preview.addEventListener('click', e => {
+        if (e.target.closest('.slot-actions') || e.target.closest('.slot-replace')) return;
+        if (progetto.preview) apriEditor(progetto, progetto.preview, 0.8);
+        else apriSelettore(progetto, 'preview', 0);
+    });
 
     disegnaGalleria(riga.querySelector('.gallery'), progetto);
     return riga;
@@ -249,8 +276,10 @@ function disegnaGalleria(contenitore, progetto) {
         slot.setAttribute('aria-label', `Foto progetto ${i + 1}${progetto.media[i] ? '' : ', vuota'}`);
         disegnaSlot(slot, progetto.media[i], i, progetto);
         slot.addEventListener('click', e => {
-            if (e.target.closest('.slot-actions')) return;
-            apriSelettore(progetto, 'gallery', i);
+            if (e.target.closest('.slot-actions') || e.target.closest('.slot-replace')) return;
+            // Slot pieno: si sceglie l'inquadratura. Slot vuoto: si caricano foto.
+            if (progetto.media[i]) apriEditor(progetto, progetto.media[i], orientamento(i) === 'horizontal' ? 1.6 : 0.8);
+            else apriSelettore(progetto, 'gallery', i);
         });
         contenitore.appendChild(slot);
     }
@@ -306,7 +335,19 @@ function disegnaSlot(slot, media, indice, progetto) {
     const src = urlVisibile(media);
     slot.insertAdjacentHTML('beforeend', media.tipo === 'video'
         ? `<video src="${src}" muted autoplay loop playsinline></video>`
-        : `<img src="${src}" alt="" />`);
+        : `<img src="${src}" alt="" style="${stileInquadratura(media)}" />`);
+
+    // Sostituisci: sta in alto a destra, separato dalle altre azioni.
+    const sostituisci = document.createElement('button');
+    sostituisci.type = 'button';
+    sostituisci.className = 'slot-replace';
+    sostituisci.title = 'Sostituisci immagine';
+    sostituisci.innerHTML = icona('sostituisci');
+    sostituisci.addEventListener('click', e => {
+        e.stopPropagation();
+        apriSelettore(progetto, indice === null ? 'preview' : 'replace', indice || 0);
+    });
+    slot.appendChild(sostituisci);
 
     const azioni = document.createElement('div');
     azioni.className = 'slot-actions';
@@ -339,6 +380,111 @@ function disegnaSlot(slot, media, indice, progetto) {
     });
 }
 
+
+// ------------------------------------------------- editor di inquadratura
+
+const INQUADRATURA_BASE = { zoom: 1, x: 50, y: 50 };
+
+function apriEditor(progetto, media, rapporto) {
+    if (media.tipo === 'video') {
+        stato('I video non si possono inquadrare.', true);
+        return;
+    }
+    editorAperto = { progetto, media, bozza: { ...INQUADRATURA_BASE, ...(media.framing || {}) } };
+    elementi.editorFrame.style.aspectRatio = String(rapporto);
+    elementi.editorImage.src = urlVisibile(media);
+    elementi.editorZoom.value = String(editorAperto.bozza.zoom);
+    aggiornaEditor();
+    elementi.editor.hidden = false;
+}
+
+function aggiornaEditor() {
+    if (!editorAperto) return;
+    const { zoom, x, y } = editorAperto.bozza;
+    elementi.editorImage.style.objectPosition = `${x}% ${y}%`;
+    elementi.editorImage.style.transform = `scale(${zoom})`;
+}
+
+function chiudiEditor() {
+    editorAperto = null;
+    elementi.editor.hidden = true;
+}
+
+function limita(valore) {
+    return Math.min(100, Math.max(0, valore));
+}
+
+elementi.editorZoom.addEventListener('input', () => {
+    if (!editorAperto) return;
+    editorAperto.bozza.zoom = Number(elementi.editorZoom.value);
+    aggiornaEditor();
+});
+
+// Trascinamento: spostare l'immagine verso destra scopre la parte sinistra,
+// quindi la percentuale di object-position si muove al contrario.
+(function attivaTrascinamento() {
+    let attivo = false;
+    let ultimoX = 0;
+    let ultimoY = 0;
+
+    elementi.editorFrame.addEventListener('pointerdown', e => {
+        if (!editorAperto) return;
+        attivo = true;
+        ultimoX = e.clientX;
+        ultimoY = e.clientY;
+        elementi.editorFrame.setPointerCapture?.(e.pointerId);
+        elementi.editorFrame.classList.add('is-dragging');
+        e.preventDefault();
+    });
+
+    elementi.editorFrame.addEventListener('pointermove', e => {
+        if (!attivo || !editorAperto) return;
+        const riquadro = elementi.editorFrame.getBoundingClientRect();
+        const zoom = editorAperto.bozza.zoom;
+        editorAperto.bozza.x = limita(editorAperto.bozza.x - (e.clientX - ultimoX) / riquadro.width * 100 / zoom);
+        editorAperto.bozza.y = limita(editorAperto.bozza.y - (e.clientY - ultimoY) / riquadro.height * 100 / zoom);
+        ultimoX = e.clientX;
+        ultimoY = e.clientY;
+        aggiornaEditor();
+    });
+
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(evento =>
+        elementi.editorFrame.addEventListener(evento, () => {
+            attivo = false;
+            elementi.editorFrame.classList.remove('is-dragging');
+        }));
+})();
+
+elementi.editorReset.addEventListener('click', () => {
+    if (!editorAperto) return;
+    editorAperto.bozza = { ...INQUADRATURA_BASE };
+    elementi.editorZoom.value = '1';
+    aggiornaEditor();
+});
+
+elementi.editorCancel.addEventListener('click', chiudiEditor);
+
+elementi.editorApply.addEventListener('click', () => {
+    if (!editorAperto) return;
+    const { progetto, media, bozza } = editorAperto;
+    const predefinita = bozza.zoom === 1 && bozza.x === 50 && bozza.y === 50;
+    // Inquadratura predefinita: non serve salvarla.
+    if (predefinita) delete media.framing;
+    else media.framing = { zoom: +bozza.zoom.toFixed(3), x: +bozza.x.toFixed(2), y: +bozza.y.toFixed(2) };
+    progetto.modificato = true;
+    chiudiEditor();
+    render();
+    stato('Inquadratura aggiornata: premi SALVA MODIFICHE.');
+});
+
+// Fuori dal riquadro o con Esc si chiude senza applicare
+elementi.editor.addEventListener('pointerdown', e => {
+    if (e.target === elementi.editor) chiudiEditor();
+});
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && editorAperto) chiudiEditor();
+});
+
 // --------------------------------------------------------- scelta dei file
 
 function apriSelettore(progetto, ruolo, indice) {
@@ -364,6 +510,9 @@ elementi.fileInput.addEventListener('change', async () => {
         }
         if (ruolo === 'preview') {
             progetto.preview = lavorati[0];
+        } else if (ruolo === 'replace') {
+            // Sostituzione secca: l'inquadratura precedente non vale più.
+            progetto.media[indice] = lavorati[0];
         } else {
             // Riempie dallo slot cliccato in avanti, uno dopo l'altro.
             for (let i = 0; i < lavorati.length && indice + i < 12; i++) {
@@ -446,6 +595,16 @@ async function salva() {
             progetto.dati.slug = slug;
             progetto.dati.gallery = progetto.media.map(m => '/' + chiaveLqip(m.url));
             progetto.dati.mainImageUrl = progetto.preview ? chiaveLqip(progetto.preview.url) : '';
+
+            // Inquadrature: una voce per foto (null = inquadratura predefinita).
+            const inquadrature = progetto.media.map(m => m.framing || null);
+            if (inquadrature.some(Boolean)) progetto.dati.galleryFraming = inquadrature;
+            else delete progetto.dati.galleryFraming;
+            if (progetto.preview && progetto.preview.framing) {
+                progetto.dati.mainImageFraming = progetto.preview.framing;
+            } else {
+                delete progetto.dati.mainImageFraming;
+            }
 
             // Il sito mostra inglese + riga vuota + italiano: l'inglese lo
             // genera la traduzione automatica dall'italiano scritto qui.
@@ -533,11 +692,17 @@ async function caricaProgetti() {
         modificato: false,
         originale: JSON.stringify(p.dati, null, 2) + '\n',
         dati: p.dati,
-        media: (p.dati.gallery || []).slice(0, 12).map(url => ({
-            url, tipo: isVideo(url) ? 'video' : 'immagine',
+        media: (p.dati.gallery || []).slice(0, 12).map((url, i) => ({
+            url,
+            tipo: isVideo(url) ? 'video' : 'immagine',
+            framing: (p.dati.galleryFraming || [])[i] || undefined,
         })),
         preview: p.dati.mainImageUrl
-            ? { url: p.dati.mainImageUrl, tipo: isVideo(p.dati.mainImageUrl) ? 'video' : 'immagine' }
+            ? {
+                url: p.dati.mainImageUrl,
+                tipo: isVideo(p.dati.mainImageUrl) ? 'video' : 'immagine',
+                framing: p.dati.mainImageFraming || undefined,
+            }
             : null,
     }));
     elementi.loading?.remove();
