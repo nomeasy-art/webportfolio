@@ -23,5 +23,23 @@
   "externalLink": "",
   "featured": false,
   "order": null,
-  "descriptionIt": "Golopà è un progetto di branding e packaging per una linea di alimenti biologici per la prima infanzia. Palette calda, illustrazioni leggere e gerarchia visiva chiara trasmettono fiducia, naturalezza e semplicità, creando un’identità riconoscibile e di forte impatto a scaffale."
+  "descriptionIt": "Golopà è un progetto di branding e packaging per una linea di alimenti biologici per la prima infanzia. Palette calda, illustrazioni leggere e gerarchia visiva chiara trasmettono fiducia, naturalezza e semplicità, creando un’identità riconoscibile e di forte impatto a scaffale.",
+  "galleryFraming": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    {
+      "zoom": 1.36,
+      "x": 0.74,
+      "y": 72.15
+    },
+    null,
+    null,
+    null,
+    null
+  ]
 }
