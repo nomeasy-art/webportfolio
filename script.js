@@ -266,11 +266,17 @@ function fillMediaBox(box, url, options) {
         img.alt = '';
         img.decoding = 'async';
         img.src = url;
-        // Inquadratura scelta dalla dashboard (zoom e porzione inquadrata)
+        // Inquadratura scelta dalla dashboard: l'immagine viene ingrandita e
+        // spostata (non scalata), così combacia con l'anteprima dell'editor.
         const framing = options && options.framing;
         if (framing) {
+            const z = framing.zoom;
+            img.style.inset = 'auto';
+            img.style.width = `${(z * 100).toFixed(3)}%`;
+            img.style.height = `${(z * 100).toFixed(3)}%`;
+            img.style.left = `${((1 - z) * framing.x).toFixed(3)}%`;
+            img.style.top = `${((1 - z) * framing.y).toFixed(3)}%`;
             img.style.objectPosition = `${framing.x}% ${framing.y}%`;
-            img.style.transform = `scale(${framing.zoom})`;
         }
         box.appendChild(img);
     }

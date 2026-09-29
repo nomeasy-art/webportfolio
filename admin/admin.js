@@ -163,10 +163,28 @@ function base64Da(blob) {
 }
 
 // Inquadratura: stesso CSS usato dal sito, così l'anteprima è fedele.
+// L'immagine viene ingrandita (width/height) e spostata (left/top) invece di
+// essere scalata: così anche la parte che esce con lo zoom resta raggiungibile.
 function stileInquadratura(media) {
     const f = media && media.framing;
     if (!f) return '';
-    return `object-position:${f.x}% ${f.y}%;transform:scale(${f.zoom});`;
+    const z = f.zoom;
+    return `inset:auto;width:${(z * 100).toFixed(3)}%;height:${(z * 100).toFixed(3)}%;`
+        + `left:${((1 - z) * f.x).toFixed(3)}%;top:${((1 - z) * f.y).toFixed(3)}%;`
+        + `object-position:${f.x}% ${f.y}%;`;
+}
+
+// Quanti pixel di immagine si possono davvero scorrere sui due assi:
+// l'eccedenza del "cover" più quella creata dallo zoom.
+function corsaInquadratura(larghezza, altezza, naturaleX, naturaleY, zoom) {
+    if (!naturaleX || !naturaleY) return { x: 0, y: 0 };
+    const base = Math.max(larghezza / naturaleX, altezza / naturaleY);
+    const eccedenzaX = Math.max(0, naturaleX * base - larghezza);
+    const eccedenzaY = Math.max(0, naturaleY * base - altezza);
+    return {
+        x: eccedenzaX * zoom + larghezza * (zoom - 1),
+        y: eccedenzaY * zoom + altezza * (zoom - 1),
+    };
 }
 
 function urlVisibile(media) {
@@ -400,9 +418,7 @@ function apriEditor(progetto, media, rapporto) {
 
 function aggiornaEditor() {
     if (!editorAperto) return;
-    const { zoom, x, y } = editorAperto.bozza;
-    elementi.editorImage.style.objectPosition = `${x}% ${y}%`;
-    elementi.editorImage.style.transform = `scale(${zoom})`;
+    elementi.editorImage.style.cssText = stileInquadratura({ framing: editorAperto.bozza });
 }
 
 function chiudiEditor() {
@@ -440,19 +456,30 @@ elementi.editorZoom.addEventListener('input', () => {
     elementi.editorFrame.addEventListener('pointermove', e => {
         if (!attivo || !editorAperto) return;
         const riquadro = elementi.editorFrame.getBoundingClientRect();
-        const zoom = editorAperto.bozza.zoom;
-        editorAperto.bozza.x = limita(editorAperto.bozza.x - (e.clientX - ultimoX) / riquadro.width * 100 / zoom);
-        editorAperto.bozza.y = limita(editorAperto.bozza.y - (e.clientY - ultimoY) / riquadro.height * 100 / zoom);
+        const img = elementi.editorImage;
+        const corsa = corsaInquadratura(riquadro.width, riquadro.height,
+            img.naturalWidth, img.naturalHeight, editorAperto.bozza.zoom);
+        // Lo spostamento del puntatore diventa spostamento dell'immagine
+        // in scala 1:1 sulla corsa realmente disponibile.
+        if (corsa.x > 0) {
+            editorAperto.bozza.x = limita(editorAperto.bozza.x - (e.clientX - ultimoX) / corsa.x * 100);
+        }
+        if (corsa.y > 0) {
+            editorAperto.bozza.y = limita(editorAperto.bozza.y - (e.clientY - ultimoY) / corsa.y * 100);
+        }
         ultimoX = e.clientX;
         ultimoY = e.clientY;
         aggiornaEditor();
     });
 
-    ['pointerup', 'pointercancel', 'pointerleave'].forEach(evento =>
-        elementi.editorFrame.addEventListener(evento, () => {
-            attivo = false;
-            elementi.editorFrame.classList.remove('is-dragging');
-        }));
+    const fine = () => {
+        attivo = false;
+        elementi.editorFrame.classList.remove('is-dragging');
+    };
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(evento =>
+        elementi.editorFrame.addEventListener(evento, fine));
+    // Rete di sicurezza se la cattura del puntatore non è disponibile
+    window.addEventListener('pointerup', fine);
 })();
 
 elementi.editorReset.addEventListener('click', () => {
