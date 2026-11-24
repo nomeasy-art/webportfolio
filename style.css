@@ -908,3 +908,175 @@ body.detail-active .active-column .scroll-wrapper {
         transition: none;
     }
 }
+/* ==========================================================================
+   Galleria full screen (desktop)
+   Il pannello del dettaglio occupa tutto il viewport: le foto vanno da bordo
+   a bordo senza spazi, mentre colonna del progetto, linea e CHIUDI restano
+   esattamente dove sono, in sovrapposizione.
+   ========================================================================== */
+@media (min-width: 1201px) {
+    :root {
+        /* Geometria della griglia, per riallineare linea e CHIUDI al viewport */
+        --grid-w: min(calc(100vw - 90px), 1800px);
+        --grid-l: calc((100vw - var(--grid-w)) / 2);
+        --col-w: calc((var(--grid-w) - 10rem) / 5);
+        --line-x: calc(var(--grid-l) + var(--col-w) + 1.25rem);
+    }
+
+    .project-detail-view {
+        position: fixed;
+        inset: 0;
+        margin: 0;
+        padding: 0;
+        height: auto;
+    }
+
+    /* La colonna del progetto sta sopra la galleria */
+    .category-column.active-column {
+        position: relative;
+        z-index: 10;
+    }
+
+    .project-detail-view::before {
+        left: var(--line-x);
+        top: 40px;
+        height: calc(100% - 40px);
+        z-index: 3;
+    }
+
+    .detail-scroll {
+        margin-top: 0;
+        padding-bottom: 0;
+        gap: 0;
+    }
+
+    .image-row-pair {
+        gap: 0;
+    }
+
+    .large-image.vertical.solo {
+        width: 50%;
+    }
+
+    /* CHIUDI sempre leggibile: si inverte rispetto a ciò che ha sotto */
+    .close-detail {
+        top: 40px;
+        right: var(--grid-l);
+        color: #fff;
+        mix-blend-mode: difference;
+        z-index: 4;
+    }
+
+    /* Sfocatura progressiva: livelli sovrapposti di backdrop-filter, ognuno
+       più intenso e più corto del precedente, sfumati con una maschera.
+       Il lato sinistro è il più sfocato e leggermente scurito; verso destra
+       l'effetto si dissolve. */
+    .detail-blur {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: calc(var(--line-x) + 22vw);
+        z-index: 2;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+        background: linear-gradient(to right,
+                rgba(10, 10, 10, 0.42) 0%,
+                rgba(10, 10, 10, 0.32) 45%,
+                rgba(10, 10, 10, 0.10) 72%,
+                rgba(10, 10, 10, 0) 100%);
+    }
+
+    body.detail-active .detail-blur {
+        opacity: 1;
+        transition-delay: 0.5s;
+    }
+
+    body.detail-closing .detail-blur {
+        opacity: 0;
+        transition-delay: 0s;
+    }
+
+    .detail-blur span {
+        position: absolute;
+        inset: 0;
+    }
+
+    .detail-blur span:nth-child(1) {
+        -webkit-backdrop-filter: blur(1px);
+        backdrop-filter: blur(1px);
+        -webkit-mask-image: linear-gradient(to right, #000 0%, #000 80%, transparent 100%);
+        mask-image: linear-gradient(to right, #000 0%, #000 80%, transparent 100%);
+    }
+
+    .detail-blur span:nth-child(2) {
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
+        -webkit-mask-image: linear-gradient(to right, #000 0%, #000 70%, transparent 92%);
+        mask-image: linear-gradient(to right, #000 0%, #000 70%, transparent 92%);
+    }
+
+    .detail-blur span:nth-child(3) {
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        -webkit-mask-image: linear-gradient(to right, #000 0%, #000 60%, transparent 84%);
+        mask-image: linear-gradient(to right, #000 0%, #000 60%, transparent 84%);
+    }
+
+    .detail-blur span:nth-child(4) {
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        -webkit-mask-image: linear-gradient(to right, #000 0%, #000 52%, transparent 76%);
+        mask-image: linear-gradient(to right, #000 0%, #000 52%, transparent 76%);
+    }
+
+    .detail-blur span:nth-child(5) {
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+        -webkit-mask-image: linear-gradient(to right, #000 0%, #000 46%, transparent 68%);
+        mask-image: linear-gradient(to right, #000 0%, #000 46%, transparent 68%);
+    }
+
+    .detail-blur span:nth-child(6) {
+        -webkit-backdrop-filter: blur(40px) saturate(1.2);
+        backdrop-filter: blur(40px) saturate(1.2);
+        -webkit-mask-image: linear-gradient(to right, #000 0%, #000 40%, transparent 60%);
+        mask-image: linear-gradient(to right, #000 0%, #000 40%, transparent 60%);
+    }
+
+    /* Testo della colonna chiaro sopra la sfocatura scura.
+       Il cambio colore parte quando la galleria ha coperto lo sfondo. */
+    .category-column h2,
+    .category-column .info-row,
+    .category-column .project-description {
+        transition: color 0.4s ease, border-color 0.4s ease;
+    }
+
+    /* Progetto senza galleria: niente sfocatura, testo scuro come sempre */
+    .project-detail-view:has(.detail-scroll:empty) .detail-blur {
+        display: none;
+    }
+
+    body.detail-active:not(.detail-closing):not(:has(.detail-scroll:empty)) .active-column {
+        --text-color: #fffbf0;
+        --text-muted-color: rgba(255, 251, 240, 0.75);
+        --border-color: rgba(255, 251, 240, 0.28);
+    }
+
+    body.detail-active:not(.detail-closing) .active-column h2,
+    body.detail-active:not(.detail-closing) .active-column .info-row,
+    body.detail-active:not(.detail-closing) .active-column .project-description {
+        transition-delay: 0.55s;
+    }
+}
+
+/* Cursore sempre visibile: bianco in modalità differenza, quindi nero sul
+   chiaro (identico a prima) e chiaro sullo scuro. */
+.custom-cursor {
+    mix-blend-mode: difference;
+}
+
+.custom-cursor .cursor-img {
+    filter: invert(1);
+}
