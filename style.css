@@ -102,7 +102,7 @@ body {
     height: 100vh;
     overflow: hidden;
     overscroll-behavior: none;
-    padding: 40px 1.25rem 0 1.25rem;
+    padding: 14px 1.25rem 0 1.25rem;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     cursor: none !important;
@@ -325,7 +325,7 @@ h2 {
 
 .sidebar-footer {
     padding-top: 1rem;
-    padding-bottom: 30px;
+    padding-bottom: 20px;
     margin-top: auto;
 }
 
@@ -954,7 +954,7 @@ body.detail-active .active-column .scroll-wrapper {
 
     /* CHIUDI sempre leggibile: si inverte rispetto alla foto che ha sotto */
     .close-detail {
-        top: 40px;
+        top: 14px;
         right: var(--grid-l);
         color: #fff;
         mix-blend-mode: difference;
