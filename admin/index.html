@@ -45,6 +45,7 @@
                 <input type="checkbox" class="switch" id="gallery-margins" />
             </label>
 
+            <button type="button" class="button new-button" id="new-project">AGGIUNGI NUOVO PROGETTO</button>
             <button type="button" class="button save-button" id="save">SALVA MODIFICHE</button>
             <div class="save-state" id="save-state"></div>
 
@@ -62,6 +63,21 @@
             <div class="loading" id="loading">CARICO I PROGETTI…</div>
         </section>
     </main>
+
+    <!-- Pop-up nuovo progetto: stessa fascia di prima, sopra uno sfondo scuro -->
+    <div class="new-modal" id="new-modal" hidden>
+        <div class="new-modal-box" role="dialog" aria-modal="true" aria-label="Nuovo progetto">
+            <div class="new-modal-head">
+                <h2>nuovo progetto</h2>
+                <button type="button" class="modal-close" id="new-close">CHIUDI</button>
+            </div>
+            <div class="new-modal-body" id="new-modal-body"></div>
+            <div class="new-modal-foot">
+                <div class="save-state" id="new-state"></div>
+                <button type="button" class="button" id="new-save">SALVA PROGETTO</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Editor di inquadratura: si trascina l'immagine e si regola lo zoom -->
     <div class="editor" id="editor" hidden>

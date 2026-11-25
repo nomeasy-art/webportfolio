@@ -26,6 +26,12 @@ const elementi = {
     saveState: document.getElementById('save-state'),
     logout: document.getElementById('logout'),
     galleryMargins: document.getElementById('gallery-margins'),
+    newProject: document.getElementById('new-project'),
+    newModal: document.getElementById('new-modal'),
+    newModalBody: document.getElementById('new-modal-body'),
+    newClose: document.getElementById('new-close'),
+    newSave: document.getElementById('new-save'),
+    newState: document.getElementById('new-state'),
     fileInput: document.getElementById('file-input'),
     editor: document.getElementById('editor'),
     editorFrame: document.getElementById('editor-frame'),
@@ -201,7 +207,9 @@ function urlVisibile(media) {
 
 function render() {
     elementi.rows.innerHTML = '';
-    elementi.rows.appendChild(creaRiga(nuovo, true));
+    // Il nuovo progetto vive nel pop-up, non più in cima all'elenco.
+    elementi.newModalBody.innerHTML = '';
+    elementi.newModalBody.appendChild(creaRiga(nuovo, true));
     progetti.forEach(p => elementi.rows.appendChild(creaRiga(p, false)));
 }
 
@@ -562,6 +570,8 @@ elementi.fileInput.addEventListener('change', async () => {
 function stato(messaggio, errore = false) {
     elementi.saveState.textContent = messaggio || '';
     elementi.saveState.style.color = errore ? '#a33' : '';
+    elementi.newState.textContent = messaggio || '';
+    elementi.newState.style.color = errore ? '#a33' : '';
 }
 
 async function chiamata(url, opzioni = {}) {
@@ -579,6 +589,7 @@ async function eliminaProgetto(progetto) {
     if (progetto.nuovo) {
         nuovo = progettoVuoto();
         render();
+        chiudiNuovo();
         stato('Bozza eliminata.');
         return;
     }
@@ -701,8 +712,10 @@ async function salva() {
         stato(erroriTraduzione.length
             ? `Salvato, ma la traduzione non è riuscita per: ${erroriTraduzione.join(', ')}.`
             : 'Salvato. Il sito si aggiorna in un minuto.', erroriTraduzione.length > 0);
+        const eraNuovo = daSalvare.some(p => p.nuovo);
         nuovo = progettoVuoto();
         await caricaProgetti();
+        if (eraNuovo) chiudiNuovo();
     } catch (err) {
         stato(err.message, true);
     } finally {
@@ -770,6 +783,32 @@ elementi.logout.addEventListener('click', async () => {
 });
 
 elementi.save.addEventListener('click', salva);
+
+// --- Pop-up nuovo progetto ---
+function apriNuovo() {
+    elementi.newState.textContent = '';
+    elementi.newModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+}
+
+function chiudiNuovo() {
+    elementi.newModal.hidden = true;
+    document.body.style.overflow = '';
+}
+
+elementi.newProject.addEventListener('click', apriNuovo);
+elementi.newClose.addEventListener('click', chiudiNuovo);
+elementi.newSave.addEventListener('click', async () => {
+    elementi.newSave.disabled = true;
+    try { await salva(); } finally { elementi.newSave.disabled = false; }
+});
+// Clic sullo sfondo scuro: chiude (la bozza resta, si ritrova riaprendo).
+elementi.newModal.addEventListener('mousedown', e => {
+    if (e.target === elementi.newModal) chiudiNuovo();
+});
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !editorAperto && !elementi.newModal.hidden) chiudiNuovo();
+});
 
 // Interruttore margini galleria: si salva subito, senza passare da SALVA MODIFICHE.
 elementi.galleryMargins.addEventListener('change', async () => {

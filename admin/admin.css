@@ -942,3 +942,101 @@ h1 {
 .switch:disabled {
     opacity: 0.5;
 }
+
+/* --- Pop-up nuovo progetto --- */
+.new-button {
+    width: 100%;
+    margin-bottom: 0.6rem;
+}
+
+.new-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    background: rgba(26, 26, 26, 0.45);
+    padding: 20px;
+    animation: modalFade 0.25s ease both;
+}
+
+.new-modal[hidden] {
+    display: none;
+}
+
+.new-modal-box {
+    width: min(1760px, 100%);
+    max-height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    animation: modalRise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.new-modal-head,
+.new-modal-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    flex-shrink: 0;
+}
+
+.new-modal-head {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.new-modal-head h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.new-modal-foot {
+    border-top: 1px solid var(--border-color);
+}
+
+.new-modal-foot .save-state {
+    margin-top: 0;
+}
+
+.modal-close {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.new-modal-body {
+    overflow-y: auto;
+    padding: 1.75rem 1.5rem;
+    min-height: 0;
+}
+
+.new-modal-body .row {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+@keyframes modalFade {
+    from { opacity: 0; }
+}
+
+@keyframes modalRise {
+    from { opacity: 0; transform: translateY(24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .new-modal,
+    .new-modal-box {
+        animation: none;
+    }
+}
