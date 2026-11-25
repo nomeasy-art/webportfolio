@@ -114,14 +114,16 @@ h1 {
 }
 
 .button {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 13px;
+    /* Stessa estetica del tasto ELIMINA: quadrato, Chivo Mono */
+    font-family: 'Chivo Mono', monospace;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: -0.4px;
     text-transform: uppercase;
-    padding: 0.7rem 1rem;
+    padding: 0.8rem 1rem;
     border: 1px solid var(--text-color);
-    border-radius: 999px;
-    background: transparent;
+    border-radius: 0;
+    background: var(--bg-color);
     color: var(--text-color);
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
@@ -901,7 +903,8 @@ h1 {
     letter-spacing: -0.4px;
     color: var(--text-muted-color);
     padding: 0.4rem 0;
-    margin: -1rem 0 1.5rem;
+    /* Annulla il margine sotto i dati: la riga continua l'elenco */
+    margin: -1.5rem 0 1.5rem;
     border-bottom: 1px solid var(--border-color);
     cursor: pointer;
 }
@@ -910,8 +913,8 @@ h1 {
     appearance: none;
     -webkit-appearance: none;
     position: relative;
-    width: 30px;
-    height: 16px;
+    width: 28px;
+    height: 14px;
     border-radius: 999px;
     background: var(--border-color);
     cursor: pointer;
@@ -924,8 +927,8 @@ h1 {
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     background: #fff;
     transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1039,4 +1042,32 @@ h1 {
     .new-modal-box {
         animation: none;
     }
+}
+
+/* Il nuovo progetto non si può eliminare: niente ELIMINA nel pop-up */
+.new-modal-body .hold-delete {
+    display: none;
+}
+
+/* CHIUDI ed ESCI: stessi tasti quadrati, in versione compatta */
+.modal-close,
+.logout {
+    font-family: 'Chivo Mono', monospace;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: -0.4px;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--text-color);
+    border-radius: 0;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.modal-close:hover,
+.logout:hover {
+    background: var(--text-color);
+    color: var(--bg-color);
 }
