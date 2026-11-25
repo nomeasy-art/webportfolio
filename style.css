@@ -932,6 +932,9 @@ body.detail-active .active-column .scroll-wrapper {
         margin: 0;
         padding: 0;
         height: auto;
+        /* Fondo pieno: serve anche a CHIUDI (in modalità differenza) per
+           restare scuro quando il progetto non ha foto */
+        background: var(--bg-color);
     }
 
     .project-detail-view::before {
@@ -950,6 +953,22 @@ body.detail-active .active-column .scroll-wrapper {
 
     .large-image.vertical.solo {
         width: 50%;
+    }
+
+    /* Margini galleria attivati dalla dashboard: stessi 20px del resto del
+       sito, e la galleria parte sotto la riga dei titoli come la colonna. */
+    body.gallery-margins .detail-scroll {
+        padding: 0 1.25rem 1.25rem;
+        margin-top: calc(14px + 36px + 8px);
+        gap: 1.25rem;
+    }
+
+    body.gallery-margins .image-row-pair {
+        gap: 1.25rem;
+    }
+
+    body.gallery-margins .large-image.vertical.solo {
+        width: calc(50% - 0.625rem);
     }
 
     /* CHIUDI sempre leggibile: si inverte rispetto alla foto che ha sotto */

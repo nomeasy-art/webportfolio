@@ -25,6 +25,7 @@ const elementi = {
     save: document.getElementById('save'),
     saveState: document.getElementById('save-state'),
     logout: document.getElementById('logout'),
+    galleryMargins: document.getElementById('gallery-margins'),
     fileInput: document.getElementById('file-input'),
     editor: document.getElementById('editor'),
     editorFrame: document.getElementById('editor-frame'),
@@ -712,7 +713,8 @@ async function salva() {
 // ----------------------------------------------------------------- avvio
 
 async function caricaProgetti() {
-    const { progetti: elenco } = await chiamata('/api/projects');
+    const { progetti: elenco, impostazioni } = await chiamata('/api/projects');
+    elementi.galleryMargins.checked = !!(impostazioni && impostazioni.galleryMargins);
     progetti = elenco.filter(p => p.dati).map(p => ({
         path: p.path,
         nuovo: false,
@@ -768,6 +770,28 @@ elementi.logout.addEventListener('click', async () => {
 });
 
 elementi.save.addEventListener('click', salva);
+
+// Interruttore margini galleria: si salva subito, senza passare da SALVA MODIFICHE.
+elementi.galleryMargins.addEventListener('change', async () => {
+    const attivo = elementi.galleryMargins.checked;
+    elementi.galleryMargins.disabled = true;
+    stato(attivo ? 'Attivo i margini…' : 'Disattivo i margini…');
+    try {
+        await chiamata('/api/commit', {
+            method: 'POST',
+            body: JSON.stringify({
+                files: [{ path: 'settings.json', text: JSON.stringify({ galleryMargins: attivo }, null, 2) + '\n' }],
+                message: `Dashboard: margini galleria ${attivo ? 'attivi' : 'disattivati'}`,
+            }),
+        });
+        stato('Fatto. Il sito si aggiorna in un minuto.');
+    } catch (err) {
+        elementi.galleryMargins.checked = !attivo;
+        stato(err.message, true);
+    } finally {
+        elementi.galleryMargins.disabled = false;
+    }
+});
 
 (async function avvio() {
     try {

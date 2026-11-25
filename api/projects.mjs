@@ -29,7 +29,14 @@ export default async function handler(req, res) {
             return oa - ob;
         });
 
-        return res.status(200).json({ progetti });
+        // Impostazioni del sito (es. margini della galleria)
+        let impostazioni = {};
+        try {
+            const f = await gh(`/repos/${repo}/contents/settings.json?ref=${branch}`);
+            impostazioni = JSON.parse(Buffer.from(f.content, 'base64').toString('utf8'));
+        } catch (e) { /* file assente: valori predefiniti */ }
+
+        return res.status(200).json({ progetti, impostazioni });
     } catch (err) {
         return res.status(err.status || 500).json({ error: err.message });
     }

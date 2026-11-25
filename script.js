@@ -408,6 +408,12 @@ async function getProjectFiles() {
     ];
 }
 
+// Impostazioni scelte dalla dashboard (es. margini della galleria)
+fetch('settings.json', { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : {})
+    .then(s => document.body.classList.toggle('gallery-margins', !!s.galleryMargins))
+    .catch(() => {});
+
 document.addEventListener('DOMContentLoaded', async () => {
     // --- FETCH PROJECTS FROM INDIVIDUAL JSON FILES ---
     try {
