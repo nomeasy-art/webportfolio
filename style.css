@@ -172,7 +172,24 @@ button,
 .column+.column {
     margin-left: -1.25rem;
     padding-left: 1.25rem;
-    border-left: 1px solid var(--border-color);
+    position: relative;
+}
+
+/* Linee verticali: partono all'altezza della parte alta dei titoli delle
+   categorie (24px dal bordo finestra), non dal margine superiore. */
+:root {
+    --line-top: 24px;
+}
+
+.column+.column::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: calc(var(--line-top) - 14px);
+    bottom: 0;
+    width: 1px;
+    background: var(--border-color);
+    pointer-events: none;
 }
 
 .scroll-wrapper {
@@ -457,6 +474,10 @@ h2 {
         padding-left: 0;
     }
 
+    .column+.column::before {
+        display: none;
+    }
+
     .scroll-wrapper {
         overflow-y: visible;
     }
@@ -686,7 +707,9 @@ h2 {
 
 body.detail-active .project-detail-view::before {
     animation: slideUpIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: 0.35s;
+    /* Parte quando la colonna del progetto è quasi arrivata: così non la
+       attraversa mentre scorre a sinistra. */
+    animation-delay: 0.6s;
 }
 
 body.detail-active .project-detail-view {
@@ -938,7 +961,15 @@ body.detail-active .active-column .scroll-wrapper {
     }
 
     .project-detail-view::before {
+        top: var(--line-top);
+        height: calc(100% - var(--line-top));
         z-index: 3;
+    }
+
+    /* La colonna del progetto resta sempre sopra il pannello della galleria:
+       mentre scorre al suo posto non viene coperta dal fondo del pannello. */
+    .category-column.active-column {
+        z-index: 10;
     }
 
     .detail-scroll {
